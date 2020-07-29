@@ -419,7 +419,7 @@ public class FirebaseMessagingPlugin extends BroadcastReceiver
             link = "http://" + link;
           intent = new Intent(Intent.ACTION_VIEW, Uri.parse(link));
           intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_SINGLE_TOP);
-          applicationContext.startActivity(finalIntent);
+          applicationContext.startActivity(intent);
           break;
         case NOTIFICATION_OPEN_APP:
           String label2 = "Subject:" + subject + ", Notice:" + notice + ", Link: " + link;
