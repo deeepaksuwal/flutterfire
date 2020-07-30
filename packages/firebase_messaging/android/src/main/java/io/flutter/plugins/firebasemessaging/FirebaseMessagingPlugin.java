@@ -410,7 +410,7 @@ public class FirebaseMessagingPlugin extends BroadcastReceiver
           } catch (android.content.ActivityNotFoundException e) {
             finalIntent = new Intent(Intent.ACTION_VIEW, Uri.parse("https://play.google.com/store/apps/details?id=" + appPackageName));
           }
-          finalIntent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_SINGLE_TOP);
+          finalIntent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_SINGLE_TOP | Intent.FLAG_ACTIVITY_NEW_TASK);
           applicationContext.startActivity(finalIntent);
           break;
         case NOTIFICATION_TYPE_2:
@@ -418,7 +418,7 @@ public class FirebaseMessagingPlugin extends BroadcastReceiver
           if (!link.startsWith("http://") && !link.startsWith("https://"))
             link = "http://" + link;
           intent = new Intent(Intent.ACTION_VIEW, Uri.parse(link));
-          intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_SINGLE_TOP);
+          intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_SINGLE_TOP | Intent.FLAG_ACTIVITY_NEW_TASK);
           applicationContext.startActivity(intent);
           break;
         case NOTIFICATION_OPEN_APP:
