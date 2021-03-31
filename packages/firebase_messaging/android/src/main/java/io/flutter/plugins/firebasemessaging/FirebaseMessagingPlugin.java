@@ -59,6 +59,7 @@ public class FirebaseMessagingPlugin extends BroadcastReceiver
   public static final String NOTIFICATION_TYPE4 = "4";
   public static final String NOTIFICATION_TYPE5 = "5";
   public static final String NOTIFICATION_TYPE7 = "7";
+  public static final String NOTIFICATION_TYPE9 = "9";
 
   public static final String NOTIFICATION_TYPE_10 = "10";
 
@@ -80,6 +81,7 @@ public class FirebaseMessagingPlugin extends BroadcastReceiver
   public static final String ACTION_DISMISS_NOTIFICATION = "NOTIFICATION_DISMISSED";
   public static final String ACTION_OPEN_NOTIFICATION = "NOTIFICATION_OPENED";
   public static final String MESSAGE_FCM = "FCM";
+  private static final String NOTIFICATION_PASSWORD_DATA = "PasswordData";
 
   private MethodChannel channel;
   private Context applicationContext;
@@ -224,6 +226,7 @@ public class FirebaseMessagingPlugin extends BroadcastReceiver
     data.put("notification", notification);
     data.put("analytics", analytics);
     data.put("surveyData", intent.getStringExtra(NOTIFICATION_SURVEYDATA));
+    data.put("passwordData", intent.getStringExtra(NOTIFICATION_PASSWORD_DATA));
     return data;
   }
 
@@ -460,6 +463,23 @@ public class FirebaseMessagingPlugin extends BroadcastReceiver
           notification.put("notificationAction", NOTIFICATION_OPEN_NOTIFICATIONPAGE);
           data.put("notification", notification);
           channel.invokeMethod(method, data);
+        case NOTIFICATION_TYPE9:
+          notification.put("notificationSubject", subject);
+          notification.put("notificationNotice", notice);
+          notification.put("notificationId", notificationId);
+          notification.put("notificationDate", date);
+          notification.put("notificationType", type);
+          notification.put("notificationLink", link);
+          notification.put("notificationAction", NOTIFICATION_TYPE9);
+          notification.put("notificationMessageType", MESSAGE_FCM);
+          notification.put("notificationImage", intent.getStringExtra(NOTIFICATION_IMAGE) != null ? intent.getStringExtra(NOTIFICATION_IMAGE) : "");
+          analytics.put("analytic_label", "password_reset_notification");
+          analytics.put("analytic_action", ACTION_OPEN_NOTIFICATION);
+          analytics.put("analytic_value", 1);
+          data.put("notification", notification);
+          data.put("analytics", analytics);
+          data.put("passwordData", intent.getStringExtra(NOTIFICATION_PASSWORD_DATA));
+          channel.invokeMethod(method, data);
         default:
           return false;
       }
@@ -468,3 +488,4 @@ public class FirebaseMessagingPlugin extends BroadcastReceiver
   }
 
 }
+
