@@ -9,7 +9,7 @@ To start using the Cloud Firestore package within your project, import it at the
 import 'package:cloud_firestore/cloud_firestore.dart';
 ```
 
-Before using Firestore, you must first have ensured you have [initialized FlutterFire](overview#initializing-flutterfire).
+Before using Firestore, you must first have ensured you have [initialized FlutterFire](../overview.mdx#initializing-flutterfire).
 
 To create a new Firestore instance, call the [`instance`](!cloud_firestore.FirebaseFirestore.instance) getter on [`FirebaseFirestore`](!cloud_firestore.FirebaseFirestore):
 
@@ -21,7 +21,7 @@ By default, this allows you to interact with Firestore using the default Firebas
 platform. If however you'd like to use Firestore with a secondary Firebase App, use the [`instanceFor`](!cloud_firestore.FirebaseFirestore.instanceFor) method:
 
 ```dart
-FirebaseApp secondaryApp = Firebase.app('SecondayApp');
+FirebaseApp secondaryApp = Firebase.app('SecondaryApp');
 FirebaseFirestore firestore = FirebaseFirestore.instanceFor(app: secondaryApp);
 ```
 
@@ -53,7 +53,7 @@ class AddUser extends StatelessWidget {
     CollectionReference users = FirebaseFirestore.instance.collection('users');
 
     Future<void> addUser() {
-      // Call the users CollectionReference to add a new user
+      // Call the user's CollectionReference to add a new user
       return users
           .add({
             'full_name': fullName, // John Doe
@@ -64,7 +64,7 @@ class AddUser extends StatelessWidget {
           .catchError((error) => print("Failed to add user: $error"));
     }
 
-    return FlatButton(
+    return TextButton(
       onPressed: addUser,
       child: Text(
         "Add User",
@@ -103,9 +103,13 @@ class GetUserName extends StatelessWidget {
         if (snapshot.hasError) {
           return Text("Something went wrong");
         }
+        
+        if (snapshot.hasData && !snapshot.data.exists) {
+          return Text("Document does not exist");
+        }
 
         if (snapshot.connectionState == ConnectionState.done) {
-          Map<String, dynamic> data = snapshot.data();
+          Map<String, dynamic> data = snapshot.data.data();
           return Text("Full Name: ${data['full_name']} ${data['last_name']}");
         }
 
@@ -153,7 +157,7 @@ class UserInformation extends StatelessWidget {
         }
 
         return new ListView(
-          children: snapshot.data.documents.map((DocumentSnapshot document) {
+          children: snapshot.data.docs.map((DocumentSnapshot document) {
             return new ListTile(
               title: new Text(document.data()['full_name']),
               subtitle: new Text(document.data()['company']),
@@ -177,7 +181,7 @@ FirebaseFirestore.instance
 
 ### Document & Query Snapshots
 
-When perfoming a query, Firestore returns either a [`QuerySnapshot`](!cloud_firestore.QuerySnapshot) or a [`DocumentSnapshot`](!cloud_firestore.DocumentSnapshot).
+When performing a query, Firestore returns either a [`QuerySnapshot`](!cloud_firestore.QuerySnapshot) or a [`DocumentSnapshot`](!cloud_firestore.DocumentSnapshot).
 
 #### QuerySnapshot
 
@@ -191,7 +195,7 @@ which returns a `List` containing [`DocumentSnapshot`](!cloud_firestore.Document
 FirebaseFirestore.instance
     .collection('users')
     .get()
-    .then((QuerySnapshot querySnapshot) => {
+    .then((QuerySnapshot querySnapshot) {
         querySnapshot.docs.forEach((doc) {
             print(doc["first_name"]);
         });
@@ -208,7 +212,7 @@ To determine whether the document exists, use the [`exists`](!cloud_firestore.Do
 ```dart
 FirebaseFirestore.instance
     .collection('users')
-    .document(userId)
+    .doc(userId)
     .get()
     .then((DocumentSnapshot documentSnapshot) {
       if (documentSnapshot.exists) {
@@ -242,7 +246,7 @@ If no data exists at the nested path, a [`StateError`](https://api.dart.dev/stab
 ```dart
 try {
   dynamic nested = snapshot.get(FieldPath(['address', 'postcode']));
-} on StateError (e) {
+} on StateError catch(e) {
   print('No nested field exists!');
 }
 ```
@@ -325,8 +329,8 @@ FirebaseFirestore.instance
   .collection('users')
   .orderBy('age')
   .orderBy('company')
-  .startAt([20, 'Swift - Harber'])
-  .endAt([50, 'Wiza Group'])
+  .startAt([4, 'Alphabet Inc.'])
+  .endAt([21, 'Google LLC'])
   .get()
   .then(...);
 ```
@@ -364,6 +368,67 @@ database.
 For more information on what is possible when writing data to Firestore, please refer to
 this [documentation](https://firebase.google.com/docs/firestore/manage-data/add-data)
 
+## Typing CollectionReference and DocumentReference
+
+By default, Firestore references manipulate a `Map<String, dynamic>` object. The downside is that we lose type safety.  
+One solution is to use `withConverter`, which will modify methods like `CollectionReference.add` or `Query.where` to be type-safe.
+
+A common usage of `withConverter` is when combined with a serializable class, such as:
+
+```dart
+class Movie {
+  Movie({required this.title, required this.genre});
+
+  Movie.fromJson(Map<String, Object?> json)
+    : this(
+        title: json['title']! as String,
+        genre: json['genre']! as String,
+      );
+
+  final String title;
+  final String genre;
+
+  Map<String, Object?> toJson() {
+    return {
+      'title': title,
+      'genre': genre,
+    };
+  }
+}
+```
+
+We can then use `withConverter` to manipulate a collection of movies like so:
+
+```dart
+final moviesRef = Firestore.instance.collection('movies').withConverter(
+      fromFirestore: (snapshot, _) => Movie.fromJson(snapshot.data()!),
+      toFirestore: (movie, _) => movie.toJson(),
+    );
+```
+
+Finally, we can use our new `moviesRef` variable to perform read and write operations:
+
+```dart
+Future<void> main() async {
+  // Obtain science-fiction movies
+  List<Movie> movies = await moviesRef
+      .where('genre', isEqualTo: 'Sci-fi')
+      .get()
+      .then((snapshot) => snapshot.docs);
+
+  // Add a movie
+  await moviesRef.add(
+    Movie(
+      title: 'Star Wars: A New Hope (Episode IV)',
+      genre: 'Sci-fi'
+    ),
+  );
+
+  // Get a movie with the id 42
+  Movie movie42 = await moviesRef.doc('42').get().then((snapshot) => snapshot.data()!);
+}
+```
+
 ## Adding Documents
 
 To add a new document to a collection, use the [`add`](!cloud_firestore.CollectionReference.add) method
@@ -383,7 +448,7 @@ class AddUser extends StatelessWidget {
     CollectionReference users = FirebaseFirestore.instance.collection('users');
 
     Future<void> addUser() {
-      // Call the users CollectionReference to add a new user
+      // Call the user's CollectionReference to add a new user
       return users
           .add({
             'full_name': fullName, // John Doe
@@ -525,8 +590,8 @@ Future<void> deleteField() {
   return users
     .doc('ABC123')
     .update({'age': FieldValue.delete()})
-    .then((value) => print("User Deleted"))
-    .catchError((error) => print("Failed to delete user: $error"));
+    .then((value) => print("User's Property Deleted"))
+    .catchError((error) => print("Failed to delete user's property: $error"));
 }
 ```
 
@@ -542,7 +607,7 @@ should be used.
 When using transactions, note that:
 
 - Read operations must come before write operations
-- Transactions will fail is the client is offline, they cannot use cached data
+- Transactions will fail when the client is offline, they cannot use cached data
 
 An example of where a transaction could be used would be in an application where a user can subscribe to a channel. When
 a user presses the subscribe button, a "subscribers" field in a document increments. Without using Transactions, we would
@@ -571,6 +636,9 @@ return Firestore.instance.runTransaction((transaction) async {
   }
 
   // Update the follower count based on the current count
+  // Note: this could be done without a transaction
+  // by updating the population using FieldValue.increment()
+
   int newFollowerCount = snapshot.data()['followers'] + 1;
 
   // Perform an update on the document
@@ -579,7 +647,7 @@ return Firestore.instance.runTransaction((transaction) async {
   // Return the new count
   return newFollowerCount;
 })
-.then((value) => print("Follower count updatd to $value"))
+.then((value) => print("Follower count updated to $value"))
 .catchError((error) => print("Failed to update user followers: $error"));
 ```
 
@@ -631,13 +699,15 @@ Firestore provides out of the box support for offline capabilities. When reading
 local database which automatically synchronizes with the server. Cloud Firestore functionality continues when users are
 offline, and automatically handles data migration when they regain connectivity.
 
-This functionality is enabled by default, however it can be disabled if needed. The [`settings`](!cloud_firestore.FirebaseFirestore.settings)
-method must be called before any Firestore interaction is performed:
+This functionality is enabled by default, however it can be disabled if needed. The [`settings`](!cloud_firestore.FirebaseFirestore.settings) must be set before any Firestore interaction is performed:
 
 ```dart
-await FirebaseFirestore.instance.settings(
-  Settings(persistenceEnabled: false)
-);
+// Web.
+await FirebaseFirestore.instance.enablePersistence();
+
+// All other platforms.
+FirebaseFirestore.instance.settings =
+    Settings(persistenceEnabled: false);
 ```
 
 If you want to clear any persisted data, you can call the [`clearPersistence()`](!cloud_firestore.FirebaseFirestore.clearPersistence) method.
@@ -659,10 +729,8 @@ will attempt to remove older, unused data. You can configure different cache siz
 // The default value is 40 MB. The threshold must be set to at least 1 MB,
 // and can be set to Settings.CACHE_SIZE_UNLIMITED to disable garbage collection.
 
-await FirebaseFirestore.instance.settings(
-  Settings(
-    cacheSizeBytes: Settings.CACHE_SIZE_UNLIMITED
-  ));
+FirebaseFirestore.instance.settings =
+    Settings(cacheSizeBytes: Settings.CACHE_SIZE_UNLIMITED);
 ```
 
 ### Disable and Enable Network Access
@@ -686,13 +754,24 @@ If you are using the local [Firestore emulators](https://firebase.google.com/doc
 connect to these by passing a [`host`](!cloud_firestore.Settings.host) parameter to the [`settings`](!cloud_firestore.FirebaseFirestore.settings) method,
 immediately after initializing Firebase. Ensure you pass the correct port on which the Firebase emulator is running on.
 
-> On Android, to reference `localhost`, use the `10.0.2.2` IP address instead.
+Ensure you have enabled network connections to the emulators in your apps following the emulator usage instructions in the general FlutterFire installation notes for each operating system.
+
+> On Android emulators, to reference `localhost`, use the `10.0.2.2` IP address instead.
 
 ```dart
-// Initialize first
-await FirebaseCore.instance.initializeApp();
+// Import foundation for [TargetPlatform].
+import 'package:flutter/foundation.dart';
 
-// Set the host as soon as possible
-await FirebaseFirestore.instance
-  .settings(Settings(host: "localhost:8080", sslEnabled: false));
+// ...
+
+// Switch host based on platform.
+String host = defaultTargetPlatform == TargetPlatform.android
+    ? '10.0.2.2:8080'
+    : 'localhost:8080';
+
+// Set the host as soon as possible.
+FirebaseFirestore.instance.settings =
+    Settings(host: host, sslEnabled: false);
+
+// ...
 ```

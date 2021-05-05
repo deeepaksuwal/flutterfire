@@ -4,13 +4,12 @@
 
 library cloud_firestore;
 
-import 'dart:async';
-
 import 'package:cloud_firestore_platform_interface/cloud_firestore_platform_interface.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_core_platform_interface/firebase_core_platform_interface.dart'
     show FirebasePluginPlatform;
-import 'package:quiver/core.dart';
+import 'package:flutter/widgets.dart';
+import 'package:meta/meta.dart';
 
 export 'package:cloud_firestore_platform_interface/cloud_firestore_platform_interface.dart'
     show

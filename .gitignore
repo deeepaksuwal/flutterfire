@@ -2,6 +2,7 @@
 .atom/
 .idea/
 .vscode/*
+.melos_tool/*
 !.vscode/tasks.json
 !.vscode/settings.json
 
@@ -15,7 +16,10 @@ examples/all_plugins/pubspec.yaml
 
 Podfile.lock
 Pods/
+Podfile
 .symlinks/
+**/Flutter/ephemeral/
+**/Flutter/Flutter.podspec
 **/Flutter/App.framework/
 **/Flutter/Flutter.framework/
 **/Flutter/Generated.xcconfig
