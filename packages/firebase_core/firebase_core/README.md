@@ -1,6 +1,6 @@
 # Firebase Core for Flutter
 
-[![pub package](https://img.shields.io/pub/v/firebase_core.svg)](https://pub.dartlang.org/packages/firebase_core)
+[![pub package](https://img.shields.io/pub/v/firebase_core.svg)](https://pub.dev/packages/firebase_core)
 
 A Flutter plugin to use the Firebase Core API, which enables connecting to multiple Firebase apps.
 
@@ -8,8 +8,7 @@ To learn more about Firebase, please visit the [Firebase website](https://fireba
 
 ## Getting Started
 
-To get started with FlutterFire, please [see the documentation](https://firebase.flutter.dev/docs/overview)
-available at [https://firebase.flutter.dev](https://firebase.flutter.dev/docs/overview)
+To get started with FlutterFire, please [see the documentation](https://firebase.flutter.dev/docs/overview).
 
 ## Usage
 
