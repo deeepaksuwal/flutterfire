@@ -4,37 +4,196 @@
 
 package io.flutter.plugins.firebase.messaging;
 
+import android.app.Notification;
+import android.app.NotificationChannel;
+import android.app.NotificationManager;
+import android.app.PendingIntent;
 import android.content.Context;
 import android.content.Intent;
+import android.graphics.Bitmap;
+import android.graphics.drawable.Drawable;
+import android.media.RingtoneManager;
+import android.os.Build;
+import android.os.Bundle;
 import android.os.Handler;
+import android.transition.Transition;
 import android.util.Log;
+
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.core.app.JobIntentService;
+import androidx.core.app.NotificationCompat;
+
+import com.bumptech.glide.Glide;
+import com.bumptech.glide.request.target.CustomTarget;
+import com.google.firebase.messaging.RemoteMessage;
+
 import io.flutter.embedding.engine.FlutterShellArgs;
+
+import java.util.Calendar;
 import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Map;
 import java.util.concurrent.CountDownLatch;
 
 public class FlutterFirebaseMessagingBackgroundService extends JobIntentService {
   private static final String TAG = "FLTFireMsgService";
 
   private static final List<Intent> messagingQueue =
-      Collections.synchronizedList(new LinkedList<>());
+    Collections.synchronizedList(new LinkedList<>());
 
-  /** Background Dart execution context. */
+  /**
+   * Background Dart execution context.
+   */
   private static FlutterFirebaseMessagingBackgroundExecutor flutterBackgroundExecutor;
 
   /**
    * Schedule the message to be handled by the {@link FlutterFirebaseMessagingBackgroundService}.
    */
   public static void enqueueMessageProcessing(Context context, Intent messageIntent) {
-    enqueueWork(
+    Log.e(TAG, messageIntent.toString());
+    if (messageIntent.hasExtra(FlutterFirebaseMessagingUtils.EXTRA_REMOTE_MESSAGE)) {
+      handleNotificationOnBackgroundOnly(messageIntent, context);
+    } else {
+      enqueueWork(
         context,
         FlutterFirebaseMessagingBackgroundService.class,
         FlutterFirebaseMessagingUtils.JOB_ID,
         messageIntent);
+    }
+
   }
+
+  private static void handleNotificationOnBackgroundOnly(Intent messageIntent, Context context) {
+    int type;
+    String link = "";
+    Long date;
+    String notice = "";
+    Bundle bundle = new Bundle();
+    String messageId = "";
+    String subject = "";
+    RemoteMessage message = messageIntent.getParcelableExtra(FlutterFirebaseMessagingUtils.EXTRA_REMOTE_MESSAGE);
+    Log.e(TAG, "MESSAGEID" + message.getData());
+    for (Map.Entry<String, String> entry : message.getData().entrySet()) {
+      bundle.putString(entry.getKey(), entry.getValue());
+    }
+    type = Integer.parseInt(bundle.getString("type"));
+
+    if (type == 1 || type == 2 || type == 7) {
+      Intent intent;
+      link = bundle.getString("link");
+      date = Calendar.getInstance().getTimeInMillis();
+      notice = bundle.getString("Notice");
+      String image = bundle.getString("image");
+      messageId = bundle.getString("Message_Id");
+      subject = bundle.getString("subject");
+      if (image == null) {
+        image = "";
+      }
+
+      NotificationManager mNotificationManager = null;
+      mNotificationManager = (NotificationManager)
+        context.getSystemService(Context.NOTIFICATION_SERVICE);
+      intent = new Intent(context, FirebaseCustomNotificationHandler.class);
+      intent.setAction(getAction(type));
+      geExtra(context, intent, type, link);
+      intent.putExtra(FlutterFirebaseMessagingMyWorldLinkConstants.NOTIFICATION_LINK, link);
+      intent.putExtra(FlutterFirebaseMessagingMyWorldLinkConstants.NOTIFICATION_DATE, date);
+      intent.putExtra(FlutterFirebaseMessagingMyWorldLinkConstants.NOTIFICATION_NOTICE, notice);
+      intent.putExtra(FlutterFirebaseMessagingMyWorldLinkConstants.NOTIFICATION_SUBJECT, subject);
+      intent.putExtra(FlutterFirebaseMessagingMyWorldLinkConstants.NOTIFICATION_TYPE, type);
+      intent.putExtra(FlutterFirebaseMessagingMyWorldLinkConstants.NOTIFICATION_ID, messageId);
+      intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK | Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_NEW_TASK);
+      PendingIntent contentIntent = PendingIntent.getBroadcast(context, 0, intent, PendingIntent.FLAG_CANCEL_CURRENT);
+
+      int importance = 0;
+      if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.N) {
+        importance = NotificationManager.IMPORTANCE_HIGH;
+      }
+      if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.O) {
+        NotificationChannel notificationChannel =
+          new NotificationChannel("1",
+            "1", importance);
+        mNotificationManager.createNotificationChannel(notificationChannel);
+      }
+      NotificationCompat.Builder mBuilder = new NotificationCompat.Builder(context);
+      ;
+      if (image.isEmpty()) {
+        mBuilder.setDefaults(Notification.DEFAULT_SOUND);
+
+      } else {
+        getBitmapAsyncAndDoWork(image, context, mBuilder, mNotificationManager);
+
+      }
+      if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+        mBuilder.setSmallIcon(R.drawable.notification);
+        mBuilder.setColorized(true);
+
+      } else {
+        mBuilder.setSmallIcon(R.drawable.notification);
+      }
+      mBuilder.setContentTitle(subject);
+      mBuilder.setContentText(notice);
+      if (image.isEmpty()) {
+        mBuilder.setStyle(new NotificationCompat.BigTextStyle().bigText(notice));
+      }
+      mBuilder.setAutoCancel(true);
+      mBuilder.setContentIntent(contentIntent);
+      mBuilder.setChannelId("1");
+
+      if (mNotificationManager != null) {
+        mNotificationManager.notify(Integer.parseInt("1"), mBuilder.build());
+      }
+    }
+  }
+
+  private static void getBitmapAsyncAndDoWork(String imageUrl, Context context, NotificationCompat.Builder builder, NotificationManager mNotificationManager) {
+
+    final Bitmap[] bitmap = {null};
+
+    Glide.with(context)
+      .asBitmap()
+      .load(imageUrl)
+      .into(new CustomTarget<Bitmap>() {
+
+        @Override
+        public void onResourceReady(@NonNull Bitmap resource, @Nullable com.bumptech.glide.request.transition.Transition<? super Bitmap> transition) {
+          bitmap[0] = resource;
+          builder.setStyle(new NotificationCompat.BigPictureStyle().bigPicture(bitmap[0]));
+          builder.setSound(RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION));
+          mNotificationManager.notify(1, builder.build());
+
+        }
+
+        @Override
+        public void onLoadCleared(Drawable placeholder) {
+        }
+      });
+  }
+
+  private static void geExtra(Context context, Intent intent, int type, String link) {
+    if (type == 1) {
+      if (!link.isEmpty())
+        intent.putExtra(FlutterFirebaseMessagingMyWorldLinkConstants.NOTIFICATION_TYPE_1_DATA, link);
+      else
+        intent.putExtra(FlutterFirebaseMessagingMyWorldLinkConstants.NOTIFICATION_TYPE_1_DATA, context.getPackageName());
+    }
+
+  }
+
+
+  private static String getAction(int type) {
+    if (type == 1) {
+      return FlutterFirebaseMessagingMyWorldLinkConstants.NOTIFICATION_TYPE_1;
+    } else if (type == 2) {
+      return FlutterFirebaseMessagingMyWorldLinkConstants.NOTIFICATION_TYPE_2;
+    } else if (type == 7) {
+      return FlutterFirebaseMessagingMyWorldLinkConstants.NOTIFICATION_DELETE;
+    }
+    return "0";
+  }
+
 
   /**
    * Starts the background isolate for the {@link FlutterFirebaseMessagingBackgroundService}.
@@ -106,7 +265,7 @@ public class FlutterFirebaseMessagingBackgroundService extends JobIntentService 
    */
   @SuppressWarnings({"deprecation", "JavadocReference"})
   public static void setPluginRegistrant(
-      io.flutter.plugin.common.PluginRegistry.PluginRegistrantCallback callback) {
+    io.flutter.plugin.common.PluginRegistry.PluginRegistrantCallback callback) {
     // Indirectly set in FlutterFirebaseMessagingBackgroundExecutor for backwards compatibility.
     FlutterFirebaseMessagingBackgroundExecutor.setPluginRegistrant(callback);
   }
@@ -137,8 +296,8 @@ public class FlutterFirebaseMessagingBackgroundService extends JobIntentService 
   protected void onHandleWork(@NonNull final Intent intent) {
     if (!flutterBackgroundExecutor.isDartBackgroundHandlerRegistered()) {
       Log.w(
-          TAG,
-          "A background message could not be handled in Dart as no onBackgroundMessage handler has been registered.");
+        TAG,
+        "A background message could not be handled in Dart as no onBackgroundMessage handler has been registered.");
       return;
     }
 
@@ -156,8 +315,8 @@ public class FlutterFirebaseMessagingBackgroundService extends JobIntentService 
     // specified by the incoming intent.
     final CountDownLatch latch = new CountDownLatch(1);
     new Handler(getMainLooper())
-        .post(
-            () -> flutterBackgroundExecutor.executeDartCallbackInBackgroundIsolate(intent, latch));
+      .post(
+        () -> flutterBackgroundExecutor.executeDartCallbackInBackgroundIsolate(intent, latch));
 
     try {
       latch.await();
