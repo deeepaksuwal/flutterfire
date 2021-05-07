@@ -118,21 +118,7 @@ public class FlutterFirebaseMessagingBackgroundService extends JobIntentService 
             FlutterFirebaseMessagingMyWorldLinkConstants.CHANNEL_ID, importance);
         mNotificationManager.createNotificationChannel(notificationChannel);
       }
-      NotificationCompat.Builder mBuilder = new NotificationCompat.Builder(context);
-      if (image.isEmpty()) {
-        mBuilder.setDefaults(Notification.DEFAULT_SOUND);
-
-      } else {
-        getBitmapAsyncAndDoWork(image, context, mBuilder, mNotificationManager);
-
-      }
-      if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-        mBuilder.setSmallIcon(R.drawable.notification);
-        mBuilder.setColorized(true);
-
-      } else {
-        mBuilder.setSmallIcon(R.drawable.notification);
-      }
+      NotificationCompat.Builder mBuilder = new NotificationCompat.Builder(context, FlutterFirebaseMessagingMyWorldLinkConstants.CHANNEL_ID);
       mBuilder.setContentTitle(subject);
       mBuilder.setContentText(notice);
       if (image.isEmpty()) {
@@ -142,17 +128,31 @@ public class FlutterFirebaseMessagingBackgroundService extends JobIntentService 
       mBuilder.setContentIntent(contentIntent);
       mBuilder.setChannelId(FlutterFirebaseMessagingMyWorldLinkConstants.CHANNEL_ID);
       mBuilder.setDeleteIntent(deletePendingIntent);
-      mBuilder.setChannelId("1");
+      if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+        mBuilder.setSmallIcon(R.drawable.ic_notification_o);
+        mBuilder.setColorized(true);
+        mBuilder.setColor(context.getResources().getColor(R.color.colorPrimary));
 
-      if (mNotificationManager != null) {
-        mNotificationManager.notify(Integer.parseInt("1"), mBuilder.build());
+      } else {
+        mBuilder.setSmallIcon(R.drawable.notification);
       }
+      if (image.isEmpty()) {
+        mBuilder.setDefaults(Notification.DEFAULT_SOUND);
+        if (mNotificationManager != null) {
+          mNotificationManager.notify(1, mBuilder.build());
+        }
+
+      } else {
+        getBitmapAsyncAndDoWork(image, context, mBuilder, mNotificationManager);
+
+      }
+
     }
   }
 
   private static PendingIntent getDeletePendingIntent(Context context, String messageId, String subject, int type, String notice, String link, Long date) {
     Intent deleteIntent = new Intent(context, FirebaseCustomNotificationHandler.class);
-    deleteIntent.setAction(FlutterFirebaseMessagingMyWorldLinkConstants.NOTIFICATION_DATE);
+    deleteIntent.setAction(FlutterFirebaseMessagingMyWorldLinkConstants.NOTIFICATION_DELETE);
     deleteIntent.putExtra(FlutterFirebaseMessagingMyWorldLinkConstants.NOTIFICATION_ID, messageId);
     deleteIntent.putExtra(FlutterFirebaseMessagingMyWorldLinkConstants.NOTIFICATION_TYPE, type);
     deleteIntent.putExtra(FlutterFirebaseMessagingMyWorldLinkConstants.NOTIFICATION_SUBJECT, subject);
