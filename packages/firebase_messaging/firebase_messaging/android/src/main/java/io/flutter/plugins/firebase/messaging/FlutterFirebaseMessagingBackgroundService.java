@@ -92,6 +92,8 @@ public class FlutterFirebaseMessagingBackgroundService extends JobIntentService 
         image = "";
       }
 
+      Random randInt = new Random();
+      int randomInt = randInt.nextInt(100000);
       NotificationManager mNotificationManager = null;
       mNotificationManager = (NotificationManager)
         context.getSystemService(Context.NOTIFICATION_SERVICE);
@@ -105,7 +107,7 @@ public class FlutterFirebaseMessagingBackgroundService extends JobIntentService 
       intent.putExtra(FlutterFirebaseMessagingMyWorldLinkConstants.NOTIFICATION_TYPE, type);
       intent.putExtra(FlutterFirebaseMessagingMyWorldLinkConstants.NOTIFICATION_ID, messageId);
       intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK | Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_NEW_TASK);
-      PendingIntent contentIntent = PendingIntent.getBroadcast(context, 0, intent, PendingIntent.FLAG_CANCEL_CURRENT);
+      PendingIntent contentIntent = PendingIntent.getBroadcast(context, randomInt, intent, PendingIntent.FLAG_CANCEL_CURRENT);
       PendingIntent deletePendingIntent = getDeletePendingIntent(context, messageId, subject, type, notice, link, date);
 
       int importance = 0;
@@ -139,11 +141,11 @@ public class FlutterFirebaseMessagingBackgroundService extends JobIntentService 
       if (image.isEmpty()) {
         mBuilder.setDefaults(Notification.DEFAULT_SOUND);
         if (mNotificationManager != null) {
-          mNotificationManager.notify(1, mBuilder.build());
+          mNotificationManager.notify(randomInt, mBuilder.build());
         }
 
       } else {
-        getBitmapAsyncAndDoWork(image, context, mBuilder, mNotificationManager);
+        getBitmapAsyncAndDoWork(image, context, mBuilder, mNotificationManager, randomInt);
 
       }
 
@@ -162,7 +164,7 @@ public class FlutterFirebaseMessagingBackgroundService extends JobIntentService 
     return PendingIntent.getBroadcast(context, 0, deleteIntent, 0);
   }
 
-  private static void getBitmapAsyncAndDoWork(String imageUrl, Context context, NotificationCompat.Builder builder, NotificationManager mNotificationManager) {
+  private static void getBitmapAsyncAndDoWork(String imageUrl, Context context, NotificationCompat.Builder builder, NotificationManager mNotificationManager, int randomInt) {
 
     final Bitmap[] bitmap = {null};
 
@@ -176,7 +178,7 @@ public class FlutterFirebaseMessagingBackgroundService extends JobIntentService 
           bitmap[0] = resource;
           builder.setStyle(new NotificationCompat.BigPictureStyle().bigPicture(bitmap[0]));
           builder.setSound(RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION));
-          mNotificationManager.notify(1, builder.build());
+          mNotificationManager.notify(randomInt, builder.build());
 
         }
 
