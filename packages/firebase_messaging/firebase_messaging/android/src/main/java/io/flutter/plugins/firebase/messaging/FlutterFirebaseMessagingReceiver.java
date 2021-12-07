@@ -31,6 +31,11 @@ public class FlutterFirebaseMessagingReceiver extends BroadcastReceiver {
       FlutterFirebaseMessagingStore.getInstance().storeFirebaseMessage(remoteMessage);
     }
 
+    SharedPreferences prefs = context.getSharedPreferences("FlutterSharedPreferences", Context.MODE_PRIVATE);
+    String username =  prefs.getString("flutter." + "PREFS_USER_DEFAULT", "");
+    InsertNotificationDBHelper dbHelper = new InsertNotificationDBHelper(context);
+    dbHelper.addNotification(remoteMessage,username);
+
     //  |-> ---------------------
     //      App in Foreground
     //   ------------------------
