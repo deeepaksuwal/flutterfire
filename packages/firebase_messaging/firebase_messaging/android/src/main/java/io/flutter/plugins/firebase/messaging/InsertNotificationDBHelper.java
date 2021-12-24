@@ -52,7 +52,7 @@ public class InsertNotificationDBHelper extends SQLiteOpenHelper {
     contentValues.put(SUBJECT, remoteMessage.getData().get("subject"));
     contentValues.put(MESSAGE, remoteMessage.getData().get("Notice"));
     contentValues.put(LINK, remoteMessage.getData().get("link"));
-    contentValues.put(DATE, remoteMessage.getSentTime());
+    contentValues.put(DATE, String.valueOf(remoteMessage.getSentTime()));
     contentValues.put(PRIORITY, remoteMessage.getPriority());
     contentValues.put(TYPE, remoteMessage.getData().get("type"));
     contentValues.put(MESSAGE_TYPE, "fcm");
