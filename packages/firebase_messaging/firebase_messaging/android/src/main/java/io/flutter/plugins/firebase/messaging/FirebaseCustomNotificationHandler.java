@@ -15,6 +15,14 @@ public class FirebaseCustomNotificationHandler extends BroadcastReceiver {
   private String link = "";
   private String notice = "";
   private String subject = "";
+  private String image = "";
+  private String singleMessageId = "";
+  private String executionId = "";
+  private String msgLabel = "";
+  private String url = "";
+  private String postType = "";
+  private String operator = "";
+  private String uniqueIdentifier = "";
   private Intent finalIntent;
   private long date;
   private Date mDate;
@@ -30,12 +38,36 @@ public class FirebaseCustomNotificationHandler extends BroadcastReceiver {
     finalIntent = intent;
 
     if (intent.getExtras() != null) {
+      Log.d(TAG, "onReceive: FIREBASE_MESSAGING get data "+intent.getData().toString());
+
+
       notificationId = _getNotificationID(intent);
       notice = _getNotice(intent);
       link = _getLink(intent);
       subject = _getSubject(intent);
       mDate = _getDate(intent);
-      type = _getType(intent);
+      image = _getImage(intent);
+      singleMessageId = _getSingleMessageId(intent);
+      executionId = _getExecutionId(intent);
+      msgLabel = _getMsgLabel(intent);
+      url = _getUrl(intent);
+      postType = _getPostType(intent);
+      operator = _getOperator(intent);
+      uniqueIdentifier = _getUniqueIdentifier(intent);
+
+      Log.d(TAG, "onReceive: FIREBASE_MESSAGING notification id " + notificationId);
+      Log.d(TAG, "onReceive: FIREBASE_MESSAGING notice " + notice);
+      Log.d(TAG, "onReceive: FIREBASE_MESSAGING link " + link);
+      Log.d(TAG, "onReceive: FIREBASE_MESSAGING subject " + subject);
+      Log.d(TAG, "onReceive: FIREBASE_MESSAGING date " + date);
+      Log.d(TAG, "onReceive: FIREBASE_MESSAGING image " + image);
+      Log.d(TAG, "onReceive: FIREBASE_MESSAGING single message id " + singleMessageId);
+      Log.d(TAG, "onReceive: FIREBASE_MESSAGING execution id " + executionId);
+      Log.d(TAG, "onReceive: FIREBASE_MESSAGING msg label " + msgLabel);
+      Log.d(TAG, "onReceive: FIREBASE_MESSAGING url " + url);
+      Log.d(TAG, "onReceive: FIREBASE_MESSAGING posttype " + postType);
+      Log.d(TAG, "onReceive: FIREBASE_MESSAGING operator " + operator);
+      Log.d(TAG, "onReceive: FIREBASE_MESSAGING unique identifier" + uniqueIdentifier);
     }
     SharedPreferences preferences = context.getSharedPreferences("FlutterSharedPreferences", Context.MODE_PRIVATE);
     token = preferences.getString("flutter.PREFS_USER_TOKEN", "");
@@ -110,5 +142,61 @@ public class FirebaseCustomNotificationHandler extends BroadcastReceiver {
 
   private String _getNotificationID(Intent intent) {
     return intent.getExtras().getString(FlutterFirebaseMessagingMyWorldLinkConstants.NOTIFICATION_ID, "");
+  }
+
+  private String _getImage(Intent intent) {
+    if (intent.getExtras().getString(FlutterFirebaseMessagingMyWorldLinkConstants.NOTIFICATION_IMAGE) != null) {
+      return intent.getExtras().getString(FlutterFirebaseMessagingMyWorldLinkConstants.NOTIFICATION_IMAGE, "");
+    }
+    return "";
+  }
+
+  private String _getSingleMessageId(Intent intent) {
+    if (intent.getExtras().getString(FlutterFirebaseMessagingMyWorldLinkConstants.NOTIFICATION_SINGLE_MESSAGE_ID) != null) {
+      return intent.getExtras().getString(FlutterFirebaseMessagingMyWorldLinkConstants.NOTIFICATION_SINGLE_MESSAGE_ID, "");
+    }
+    return "";
+  }
+
+  private String _getExecutionId(Intent intent) {
+    if (intent.getExtras().getString(FlutterFirebaseMessagingMyWorldLinkConstants.NOTIFICATION_EXECUTION_ID) != null) {
+      return intent.getExtras().getString(FlutterFirebaseMessagingMyWorldLinkConstants.NOTIFICATION_EXECUTION_ID, "");
+    }
+    return "";
+  }
+
+  private String _getMsgLabel(Intent intent) {
+    if (intent.getExtras().getString(FlutterFirebaseMessagingMyWorldLinkConstants.NOTIFICATION_MSG_LABEL) != null) {
+      return intent.getExtras().getString(FlutterFirebaseMessagingMyWorldLinkConstants.NOTIFICATION_MSG_LABEL, "");
+    }
+    return "";
+  }
+
+  private String _getUrl(Intent intent) {
+    if (intent.getExtras().getString(FlutterFirebaseMessagingMyWorldLinkConstants.NOTIFICATION_URL) != null) {
+      return intent.getExtras().getString(FlutterFirebaseMessagingMyWorldLinkConstants.NOTIFICATION_URL, "");
+    }
+    return "";
+  }
+
+  private String _getPostType(Intent intent) {
+    if (intent.getExtras().getString(FlutterFirebaseMessagingMyWorldLinkConstants.NOTIFICATION_POSTTYPE) != null) {
+      return intent.getExtras().getString(FlutterFirebaseMessagingMyWorldLinkConstants.NOTIFICATION_POSTTYPE, "");
+    }
+    return "";
+  }
+
+  private String _getOperator(Intent intent) {
+    if (intent.getExtras().getString(FlutterFirebaseMessagingMyWorldLinkConstants.NOTIFICATION_OPERATOR) != null) {
+      return intent.getExtras().getString(FlutterFirebaseMessagingMyWorldLinkConstants.NOTIFICATION_OPERATOR, "");
+    }
+    return "";
+  }
+
+  private String _getUniqueIdentifier(Intent intent) {
+    if (intent.getExtras().getString(FlutterFirebaseMessagingMyWorldLinkConstants.NOTIFICATION_UNIQUE_IDENTIFIER) != null) {
+      return intent.getExtras().getString(FlutterFirebaseMessagingMyWorldLinkConstants.NOTIFICATION_UNIQUE_IDENTIFIER, "");
+    }
+    return "";
   }
 }
