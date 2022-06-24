@@ -38,9 +38,6 @@ public class FirebaseCustomNotificationHandler extends BroadcastReceiver {
     finalIntent = intent;
 
     if (intent.getExtras() != null) {
-      Log.d(TAG, "onReceive: FIREBASE_MESSAGING get data "+intent.getData().toString());
-
-
       notificationId = _getNotificationID(intent);
       notice = _getNotice(intent);
       link = _getLink(intent);
@@ -54,20 +51,6 @@ public class FirebaseCustomNotificationHandler extends BroadcastReceiver {
       postType = _getPostType(intent);
       operator = _getOperator(intent);
       uniqueIdentifier = _getUniqueIdentifier(intent);
-
-      Log.d(TAG, "onReceive: FIREBASE_MESSAGING notification id " + notificationId);
-      Log.d(TAG, "onReceive: FIREBASE_MESSAGING notice " + notice);
-      Log.d(TAG, "onReceive: FIREBASE_MESSAGING link " + link);
-      Log.d(TAG, "onReceive: FIREBASE_MESSAGING subject " + subject);
-      Log.d(TAG, "onReceive: FIREBASE_MESSAGING date " + date);
-      Log.d(TAG, "onReceive: FIREBASE_MESSAGING image " + image);
-      Log.d(TAG, "onReceive: FIREBASE_MESSAGING single message id " + singleMessageId);
-      Log.d(TAG, "onReceive: FIREBASE_MESSAGING execution id " + executionId);
-      Log.d(TAG, "onReceive: FIREBASE_MESSAGING msg label " + msgLabel);
-      Log.d(TAG, "onReceive: FIREBASE_MESSAGING url " + url);
-      Log.d(TAG, "onReceive: FIREBASE_MESSAGING posttype " + postType);
-      Log.d(TAG, "onReceive: FIREBASE_MESSAGING operator " + operator);
-      Log.d(TAG, "onReceive: FIREBASE_MESSAGING unique identifier" + uniqueIdentifier);
     }
     SharedPreferences preferences = context.getSharedPreferences("FlutterSharedPreferences", Context.MODE_PRIVATE);
     token = preferences.getString("flutter.PREFS_USER_TOKEN", "");
@@ -103,7 +86,6 @@ public class FirebaseCustomNotificationHandler extends BroadcastReceiver {
         FirebaseMessagingMyWorldLinkUtils.sendNotificationReadStatus(context, notificationId, "1", username, token);
         context.startActivity(intent);
         break;
-
     }
   }
 
