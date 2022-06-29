@@ -32,8 +32,8 @@ public class InsertNotificationDBHelper extends SQLiteOpenHelper {
   private static String DATE = "date";
   private static String PRIORITY = "priority";
   private static String TYPE = "type";
-  private static String MESSAGE_TYPE = "message_type";
-  private static String CONTENT_TYPE = "content_type";
+  private static String MESSAGE_TYPE = "messageType";
+  private static String CONTENT_TYPE = "contentType";
   private static String STATUS = "status";
   private static String USERNAME = "username";
   private static String IMAGE_DISPLAY = "image";
