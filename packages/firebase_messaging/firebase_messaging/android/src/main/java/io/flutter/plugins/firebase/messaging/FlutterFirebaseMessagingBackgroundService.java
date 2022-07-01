@@ -74,6 +74,7 @@ public class FlutterFirebaseMessagingBackgroundService extends JobIntentService 
     String link = "";
     Long date;
     String notice = "";
+    String readStatus = "";
     Bundle bundle = new Bundle();
     String messageId = "";
     String subject = "";
@@ -102,6 +103,7 @@ public class FlutterFirebaseMessagingBackgroundService extends JobIntentService 
       subject = bundle.getString("subject");
       singleMessageId = bundle.getString("single_message_id");
       executionId = bundle.getString("execution_id");
+      readStatus = bundle.getString("read_status");
       msgLabel = bundle.getString("msg_label");
       url = bundle.getString("url");
       postType = bundle.getString("posttype");
