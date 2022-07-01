@@ -127,6 +127,7 @@ public class FlutterFirebaseMessagingBackgroundService extends JobIntentService 
       intent.putExtra(FlutterFirebaseMessagingMyWorldLinkConstants.NOTIFICATION_MSG_LABEL, msgLabel);
       intent.putExtra(FlutterFirebaseMessagingMyWorldLinkConstants.NOTIFICATION_URL, url);
       intent.putExtra(FlutterFirebaseMessagingMyWorldLinkConstants.NOTIFICATION_POSTTYPE, postType);
+      intent.putExtra(FlutterFirebaseMessagingMyWorldLinkConstants.NOTIFICATION_READ_STATUS, "read");
       intent.putExtra(FlutterFirebaseMessagingMyWorldLinkConstants.NOTIFICATION_OPERATOR, operator);
       intent.putExtra(FlutterFirebaseMessagingMyWorldLinkConstants.NOTIFICATION_UNIQUE_IDENTIFIER, uniqueIdentifier);
       intent.putExtra(FlutterFirebaseMessagingMyWorldLinkConstants.NOTIFICATION_ID, messageId);
@@ -195,6 +196,7 @@ public class FlutterFirebaseMessagingBackgroundService extends JobIntentService 
     deleteIntent.putExtra(FlutterFirebaseMessagingMyWorldLinkConstants.NOTIFICATION_URL, url);
     deleteIntent.putExtra(FlutterFirebaseMessagingMyWorldLinkConstants.NOTIFICATION_POSTTYPE, postType);
     deleteIntent.putExtra(FlutterFirebaseMessagingMyWorldLinkConstants.NOTIFICATION_OPERATOR, operator);
+    deleteIntent.putExtra(FlutterFirebaseMessagingMyWorldLinkConstants.NOTIFICATION_READ_STATUS, "read");
     deleteIntent.putExtra(FlutterFirebaseMessagingMyWorldLinkConstants.NOTIFICATION_UNIQUE_IDENTIFIER, uniqueIdentifier);
     return PendingIntent.getBroadcast(context, 0, deleteIntent, 0);
   }

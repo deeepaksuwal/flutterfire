@@ -21,6 +21,7 @@ public class FirebaseCustomNotificationHandler extends BroadcastReceiver {
   private String msgLabel = "";
   private String url = "";
   private String postType = "";
+  private String readStatus = "";
   private String operator = "";
   private String uniqueIdentifier = "";
   private Intent finalIntent;
@@ -55,6 +56,7 @@ public class FirebaseCustomNotificationHandler extends BroadcastReceiver {
     SharedPreferences preferences = context.getSharedPreferences("FlutterSharedPreferences", Context.MODE_PRIVATE);
     token = preferences.getString("flutter.PREFS_USER_TOKEN", "");
     username = preferences.getString("flutter.PREFS_USER_DEFAULT", "");
+    preferences.edit().putString("flutter.PREFS_USER_READ_STATUS_NOTIFICATION", "read").apply();
     handleNotificationType(context, intent);
 
   }
@@ -164,6 +166,13 @@ public class FirebaseCustomNotificationHandler extends BroadcastReceiver {
   private String _getPostType(Intent intent) {
     if (intent.getExtras().getString(FlutterFirebaseMessagingMyWorldLinkConstants.NOTIFICATION_POSTTYPE) != null) {
       return intent.getExtras().getString(FlutterFirebaseMessagingMyWorldLinkConstants.NOTIFICATION_POSTTYPE, "");
+    }
+    return "";
+  }
+
+  private String _getReadStatus(Intent intent) {
+    if (intent.getExtras().getString(FlutterFirebaseMessagingMyWorldLinkConstants.NOTIFICATION_READ_STATUS) != null) {
+      return intent.getExtras().getString(FlutterFirebaseMessagingMyWorldLinkConstants.NOTIFICATION_READ_STATUS, "");
     }
     return "";
   }
