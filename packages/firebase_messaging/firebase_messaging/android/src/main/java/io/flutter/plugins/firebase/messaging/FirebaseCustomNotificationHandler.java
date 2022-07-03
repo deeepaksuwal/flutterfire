@@ -64,7 +64,7 @@ public class FirebaseCustomNotificationHandler extends BroadcastReceiver {
   private void handleNotificationType(Context context, Intent intent) {
     switch (intent.getAction()) {
       case FlutterFirebaseMessagingMyWorldLinkConstants.NOTIFICATION_DELETE:
-        FirebaseMessagingMyWorldLinkUtils.sendNotificationReadStatus(context, notificationId, "2", username, token);
+        FirebaseMessagingMyWorldLinkUtils.sendNotificationReadStatus(context, msgLabel, singleMessageId, username, executionId);
         break;
 
       case FlutterFirebaseMessagingMyWorldLinkConstants.NOTIFICATION_TYPE_1:
@@ -76,7 +76,7 @@ public class FirebaseCustomNotificationHandler extends BroadcastReceiver {
         }
         finalIntent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_SINGLE_TOP | Intent.FLAG_ACTIVITY_NEW_TASK);
         context.startActivity(finalIntent);
-        FirebaseMessagingMyWorldLinkUtils.sendNotificationReadStatus(context, notificationId, "1", username, token);
+        FirebaseMessagingMyWorldLinkUtils.sendNotificationReadStatus(context, msgLabel, singleMessageId, username, executionId);
         break;
 
       case FlutterFirebaseMessagingMyWorldLinkConstants.NOTIFICATION_TYPE_2:
@@ -85,7 +85,7 @@ public class FirebaseCustomNotificationHandler extends BroadcastReceiver {
           link = "http://" + link;
         intent = new Intent(Intent.ACTION_VIEW, Uri.parse(link));
         intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_SINGLE_TOP | Intent.FLAG_ACTIVITY_NEW_TASK);
-        FirebaseMessagingMyWorldLinkUtils.sendNotificationReadStatus(context, notificationId, "1", username, token);
+        FirebaseMessagingMyWorldLinkUtils.sendNotificationReadStatus(context, msgLabel, singleMessageId, username, executionId);
         context.startActivity(intent);
         break;
     }

@@ -36,7 +36,7 @@ public class InsertNotificationDBHelper extends SQLiteOpenHelper {
   private static String CONTENT_TYPE = "contentType";
   private static String STATUS = "status";
   private static String USERNAME = "username";
-  private static String IMAGE_DISPLAY = "image_display";
+  private static String IMAGE_DISPLAY = "image";
   private static String SINGLE_MESSAGE_ID = "single_message_id";
   private static String EXECUTION_ID = "execution_id";
   private static String MSG_LABEL = "msg_label";
@@ -67,7 +67,7 @@ public class InsertNotificationDBHelper extends SQLiteOpenHelper {
     contentValues.put(TYPE, remoteMessage.getData().get("type"));
     contentValues.put(MESSAGE_TYPE, "fcm");
     contentValues.put(CONTENT_TYPE, "text/plain");
-    contentValues.put(IMAGE_DISPLAY, remoteMessage.getData().get("image_display"));
+    contentValues.put(IMAGE_DISPLAY, remoteMessage.getData().get("image"));
     contentValues.put(SINGLE_MESSAGE_ID, remoteMessage.getData().get("single_message_id"));
     contentValues.put(EXECUTION_ID, remoteMessage.getData().get("execution_id"));
     contentValues.put(MSG_LABEL, remoteMessage.getData().get("msg_label"));

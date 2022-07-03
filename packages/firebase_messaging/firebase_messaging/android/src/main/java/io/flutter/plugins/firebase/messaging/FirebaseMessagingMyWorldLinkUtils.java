@@ -1,6 +1,8 @@
 package io.flutter.plugins.firebase.messaging;
 
 import android.content.Context;
+import android.util.Log;
+import android.widget.Toast;
 
 import androidx.annotation.Nullable;
 
@@ -19,41 +21,42 @@ import java.util.HashMap;
 import java.util.Map;
 
 public class FirebaseMessagingMyWorldLinkUtils {
-  public static void sendNotificationReadStatus(final Context context, final String notificationId, final String status, final String username, String token) {
+  public static void sendNotificationReadStatus(final Context mContext,
+                                                final String messageType, final String singleMessageId, final String username, final String executionId) {
     RequestQueue requestQueue = Volley.newRequestQueue(context);
-    StringRequest request = new StringRequest(Request.Method.POST,
-      "https://custmobileapp.worldlink.com.np/app/v1/appEservice/update_notification", response -> {
+    String url = ApiUrls.NOTIFICATION_SYNC_URI + username + "/action/" + executionId;
+    Log.e("URL VOLLEY", url);
+    StringRequest request = new StringRequest(com.android.volley.Request.Method.PATCH, url,
+      new com.android.volley.Response.Listener<String>() {
 
-    }, error -> {
-
+        @Override
+        public void onResponse(String response) {
+          Log.d("asdff", "onResponse: " + response);
+          Toast.makeText(mContext, "Success : " + response, Toast.LENGTH_LONG).show();
+        }
+      }, new com.android.volley.Response.ErrorListener() {
+      @Override
+      public void onErrorResponse(VolleyError error) {
+//                Log.d("asdf", "onErrorResponse: "+error);
+        Log.d("asdf url ", "onErrorResponse: " + url);
+      }
     }) {
       @Override
       protected Map<String, String> getParams() {
-        JSONArray notificationContents = new JSONArray();
-
-        JSONObject jsonObject = new JSONObject();
-        try {
-          jsonObject.put("id", "cust_fcm." + notificationId);
-          jsonObject.put("status", status);
-          notificationContents.put(jsonObject);
-        } catch (JSONException e) {
-          e.printStackTrace();
-        }
-
-        HashMap<String, String> hashMap = new HashMap<>();
-        hashMap.put("machine_name", username);
-        hashMap.put("request_from", "auth-mobileapp");
-        hashMap.put("notifications", String.valueOf(notificationContents));
+        HashMap<String, String> hashMap = new HashMap<String, String>();
+        hashMap.put("user_action", "seen");
+        hashMap.put("message_type", messageType);
+        hashMap.put("message_id", singleMessageId);
+//                hashMap.put("token",HelperMethods.getKeyFromPref(mContext));
         return hashMap;
       }
 
       @Override
       public Map<String, String> getHeaders() {
-        Map<String, String> params = new HashMap<>();
-        params.put("content-type", "application/x-www-form-urlencoded");
-        params.put("authorization", "Bearer " + token);
+        Map<String, String> params = new HashMap<String, String>();
+        params.put("Content-Type", "application/x-www-form-urlencoded");
+        params.put("Authorization", "Bearer " + HelperMethods.getKeyFromPref(mContext));
         return params;
-
       }
     };
     requestQueue.add(request);
