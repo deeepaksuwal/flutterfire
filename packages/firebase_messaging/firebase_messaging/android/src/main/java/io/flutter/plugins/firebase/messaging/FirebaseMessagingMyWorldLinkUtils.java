@@ -21,33 +21,25 @@ import java.util.HashMap;
 import java.util.Map;
 
 public class FirebaseMessagingMyWorldLinkUtils {
-  public static void sendNotificationReadStatus(final Context mContext,
-                                                final String messageType, final String singleMessageId, final String username, final String executionId) {
+  public static void sendNotificationReadStatus(final Context context,
+                                                final String messageType, final String singleMessageId, final String username, final String executionId,final String token) {
     RequestQueue requestQueue = Volley.newRequestQueue(context);
     String url = "https://custmobileapp.worldlink.com.np/app/v2/notification/" + username + "/action/" + executionId;
-    Log.e("URL VOLLEY", url);
-    StringRequest request = new StringRequest(com.android.volley.Request.Method.PATCH, url,
-      new com.android.volley.Response.Listener<String>() {
+    Log.e("URL VOLLEY PACKAGE", url);
+    StringRequest request = new StringRequest(com.android.volley.Request.Method.PATCH, url, response -> {
+      Log.e("PACKAGE SUCCESS ", url);
 
-        @Override
-        public void onResponse(String response) {
-          Log.d("asdff", "onResponse: " + response);
-          Toast.makeText(mContext, "Success : " + response, Toast.LENGTH_LONG).show();
-        }
-      }, new com.android.volley.Response.ErrorListener() {
-      @Override
-      public void onErrorResponse(VolleyError error) {
-//                Log.d("asdf", "onErrorResponse: "+error);
-        Log.d("asdf url ", "onErrorResponse: " + url);
-      }
-    }) {
+    }, error -> {
+      Log.e("PACKAGE ERROR ", url);
+
+    }){
       @Override
       protected Map<String, String> getParams() {
         HashMap<String, String> hashMap = new HashMap<String, String>();
         hashMap.put("user_action", "seen");
         hashMap.put("message_type", messageType);
         hashMap.put("message_id", singleMessageId);
-//                hashMap.put("token",HelperMethods.getKeyFromPref(mContext));
+//                hashMap.put("token",HelperMethods.getKeyFromPref(context));
         return hashMap;
       }
 
@@ -55,7 +47,7 @@ public class FirebaseMessagingMyWorldLinkUtils {
       public Map<String, String> getHeaders() {
         Map<String, String> params = new HashMap<String, String>();
         params.put("Content-Type", "application/x-www-form-urlencoded");
-        params.put("Authorization", "Bearer " + HelperMethods.getKeyFromPref(mContext));
+        params.put("Authorization", "Bearer " + token);
         return params;
       }
     };
