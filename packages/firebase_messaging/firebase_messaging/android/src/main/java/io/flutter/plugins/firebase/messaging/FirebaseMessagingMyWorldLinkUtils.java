@@ -24,7 +24,7 @@ public class FirebaseMessagingMyWorldLinkUtils {
   public static void sendNotificationReadStatus(final Context mContext,
                                                 final String messageType, final String singleMessageId, final String username, final String executionId) {
     RequestQueue requestQueue = Volley.newRequestQueue(context);
-    String url = ApiUrls.NOTIFICATION_SYNC_URI + username + "/action/" + executionId;
+    String url = "https://custmobileapp.worldlink.com.np/app/v2/notification/" + username + "/action/" + executionId;
     Log.e("URL VOLLEY", url);
     StringRequest request = new StringRequest(com.android.volley.Request.Method.PATCH, url,
       new com.android.volley.Response.Listener<String>() {
