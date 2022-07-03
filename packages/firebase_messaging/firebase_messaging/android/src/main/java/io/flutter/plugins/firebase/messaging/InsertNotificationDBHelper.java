@@ -67,7 +67,7 @@ public class InsertNotificationDBHelper extends SQLiteOpenHelper {
     contentValues.put(TYPE, remoteMessage.getData().get("type"));
     contentValues.put(MESSAGE_TYPE, "fcm");
     contentValues.put(CONTENT_TYPE, "text/plain");
-    contentValues.put(IMAGE_DISPLAY, remoteMessage.getData().get("image"));
+    contentValues.put(IMAGE_DISPLAY, remoteMessage.getData().get("image_display"));
     contentValues.put(SINGLE_MESSAGE_ID, remoteMessage.getData().get("single_message_id"));
     contentValues.put(EXECUTION_ID, remoteMessage.getData().get("execution_id"));
     contentValues.put(MSG_LABEL, remoteMessage.getData().get("msg_label"));

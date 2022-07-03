@@ -8,7 +8,7 @@ public class FlutterFirebaseMessagingMyWorldLinkConstants {
   public static final String NOTIFICATION_LINK = "link";
   public static final String NOTIFICATION_READ_STATUS = "read_status";
   public static final String NOTIFICATION_SUBJECT = "subject";
-  public static final String NOTIFICATION_IMAGE = "image";
+  public static final String NOTIFICATION_IMAGE = "image_display";
   public static final String NOTIFICATION_SINGLE_MESSAGE_ID = "single_message_id";
   public static final String NOTIFICATION_EXECUTION_ID = "execution_id";
   public static final String NOTIFICATION_MSG_LABEL = "msg_label";
