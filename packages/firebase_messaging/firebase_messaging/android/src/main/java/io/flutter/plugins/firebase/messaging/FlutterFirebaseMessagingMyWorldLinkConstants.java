@@ -1,12 +1,12 @@
 package io.flutter.plugins.firebase.messaging;
 
 public class FlutterFirebaseMessagingMyWorldLinkConstants {
-  public static final String NOTIFICATION_ID = "notification_id";
-  public static final String NOTIFICATION_DATE = "notification_date";
-  public static final String NOTIFICATION_NOTICE = "notice";
-  public static final String NOTIFICATION_TYPE = "Type";
+  public static final String NOTIFICATION_ID = "id";
+  public static final String NOTIFICATION_DATE = "date";
+  public static final String NOTIFICATION_NOTICE = "message";
+  public static final String NOTIFICATION_TYPE = "type";
+  public static final String NOTIFICATION_STATUS = "status";
   public static final String NOTIFICATION_LINK = "link";
-  public static final String NOTIFICATION_READ_STATUS = "read_status";
   public static final String NOTIFICATION_SUBJECT = "subject";
   public static final String NOTIFICATION_IMAGE = "image";
   public static final String NOTIFICATION_SINGLE_MESSAGE_ID = "single_message_id";

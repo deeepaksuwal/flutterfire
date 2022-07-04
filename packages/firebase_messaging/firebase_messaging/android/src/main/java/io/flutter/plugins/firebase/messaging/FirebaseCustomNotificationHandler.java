@@ -170,13 +170,6 @@ public class FirebaseCustomNotificationHandler extends BroadcastReceiver {
     return "";
   }
 
-  private String _getReadStatus(Intent intent) {
-    if (intent.getExtras().getString(FlutterFirebaseMessagingMyWorldLinkConstants.NOTIFICATION_READ_STATUS) != null) {
-      return intent.getExtras().getString(FlutterFirebaseMessagingMyWorldLinkConstants.NOTIFICATION_READ_STATUS, "");
-    }
-    return "";
-  }
-
   private String _getOperator(Intent intent) {
     if (intent.getExtras().getString(FlutterFirebaseMessagingMyWorldLinkConstants.NOTIFICATION_OPERATOR) != null) {
       return intent.getExtras().getString(FlutterFirebaseMessagingMyWorldLinkConstants.NOTIFICATION_OPERATOR, "");

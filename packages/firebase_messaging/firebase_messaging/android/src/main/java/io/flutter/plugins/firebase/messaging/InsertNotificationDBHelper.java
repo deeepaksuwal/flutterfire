@@ -42,7 +42,6 @@ public class InsertNotificationDBHelper extends SQLiteOpenHelper {
   private static String MSG_LABEL = "msg_label";
   private static String URL = "url";
   private static String POSTTYPE = "posttype";
-  private static String READ_STATUS = "read_status";
   private static String OPERATOR = "operator";
   private static String UNIQUE_IDENTIFIER = "unique_identifier";
 
@@ -60,7 +59,7 @@ public class InsertNotificationDBHelper extends SQLiteOpenHelper {
     ContentValues contentValues = new ContentValues();
     contentValues.put(ID, remoteMessage.getMessageId());
     contentValues.put(SUBJECT, remoteMessage.getData().get("subject"));
-    contentValues.put(MESSAGE, remoteMessage.getData().get("Notice"));
+    contentValues.put(MESSAGE, remoteMessage.getData().get("message"));
     contentValues.put(LINK, remoteMessage.getData().get("link"));
     contentValues.put(DATE, getFormattedDate(new Date()));
     contentValues.put(PRIORITY, remoteMessage.getPriority());
@@ -73,10 +72,9 @@ public class InsertNotificationDBHelper extends SQLiteOpenHelper {
     contentValues.put(MSG_LABEL, remoteMessage.getData().get("msg_label"));
     contentValues.put(URL, remoteMessage.getData().get("url"));
     contentValues.put(POSTTYPE, remoteMessage.getData().get("posttype"));
-    contentValues.put(READ_STATUS, "read");
     contentValues.put(OPERATOR, remoteMessage.getData().get("operator"));
     contentValues.put(UNIQUE_IDENTIFIER, remoteMessage.getData().get("unique_identifier"));
-    contentValues.put(STATUS, "0");
+    contentValues.put(STATUS, remoteMessage.getData().get("status") );
     contentValues.put(USERNAME, username);
     SQLiteDatabase db = this.getWritableDatabase();
     db.insert(TABLE_NAME, null, contentValues);
