@@ -11,7 +11,6 @@ import androidx.annotation.Nullable;
 import com.google.firebase.messaging.RemoteMessage;
 
 import java.util.Map;
-import java.text.SimpleDateFormat;
 import java.util.Date;
 
 public class InsertNotificationDBHelper extends SQLiteOpenHelper {
@@ -61,7 +60,7 @@ public class InsertNotificationDBHelper extends SQLiteOpenHelper {
     contentValues.put(SUBJECT, remoteMessage.getData().get("subject"));
     contentValues.put(MESSAGE, remoteMessage.getData().get("message"));
     contentValues.put(LINK, remoteMessage.getData().get("link"));
-    contentValues.put(DATE, getFormattedDate(new Date()));
+    contentValues.put(DATE, remoteMessage.getData().get("date"));
     contentValues.put(PRIORITY, remoteMessage.getPriority());
     contentValues.put(TYPE, remoteMessage.getData().get("type"));
     contentValues.put(MESSAGE_TYPE, "fcm");
@@ -80,11 +79,4 @@ public class InsertNotificationDBHelper extends SQLiteOpenHelper {
     db.insert(TABLE_NAME, null, contentValues);
     db.close();
   }
-
-  public static String getFormattedDate(Date date) {
-    SimpleDateFormat formatter = new SimpleDateFormat("dd-MM-yyyy HH:mm:ss");
-
-    return formatter.format(date);
-  }
-
 }

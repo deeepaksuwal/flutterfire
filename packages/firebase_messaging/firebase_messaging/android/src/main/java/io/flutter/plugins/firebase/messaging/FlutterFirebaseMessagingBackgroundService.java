@@ -70,19 +70,19 @@ public class FlutterFirebaseMessagingBackgroundService extends JobIntentService 
   }
 
   private static void handleNotificationOnBackgroundOnly(Intent messageIntent, Context context) {
-    int type;
+    String type = "";
     String link = "";
-    Long date;
+    String date="";
     String notice = "";
     Bundle bundle = new Bundle();
     String messageId = "";
     String subject = "";
     String image = "";
     String singleMessageId = "";
-    String executionId = "";
+    int executionId ;
     String msgLabel = "";
     String url = "";
-    String postType = "";
+    int postType;
     String operator = "";
     String uniqueIdentifier = "";
     RemoteMessage message = messageIntent.getParcelableExtra(FlutterFirebaseMessagingUtils.EXTRA_REMOTE_MESSAGE);
@@ -90,21 +90,21 @@ public class FlutterFirebaseMessagingBackgroundService extends JobIntentService 
     for (Map.Entry<String, String> entry : message.getData().entrySet()) {
       bundle.putString(entry.getKey(), entry.getValue());
     }
-    type = Integer.parseInt(bundle.getString("type"));
+    postType = bundle.getInt("posttype");
 
-    if (type == 1 || type == 2 || type == 7) {
+    if (postType == 1 || postType == 2 || postType == 7) {
       Intent intent;
       link = bundle.getString("link");
-      date = Calendar.getInstance().getTimeInMillis();
+      date = bundle.getString("date");
       notice = bundle.getString("message");
       image = bundle.getString("image");
       messageId = bundle.getString("Message_Id");
       subject = bundle.getString("subject");
       singleMessageId = bundle.getString("single_message_id");
-      executionId = bundle.getString("execution_id");
+      executionId = bundle.getInt("execution_id");
       msgLabel = bundle.getString("msg_label");
       url = bundle.getString("url");
-      postType = bundle.getString("posttype");
+      type = bundle.getString("type");
       operator = bundle.getString("operator");
       uniqueIdentifier = bundle.getString("unique_identifier");
 
@@ -114,8 +114,8 @@ public class FlutterFirebaseMessagingBackgroundService extends JobIntentService 
       mNotificationManager = (NotificationManager)
         context.getSystemService(Context.NOTIFICATION_SERVICE);
       intent = new Intent(context, FirebaseCustomNotificationHandler.class);
-      intent.setAction(getAction(type));
-      geExtra(context, intent, type, link);
+      intent.setAction(getAction(postType));
+      geExtra(context, intent, postType, link);
       intent.putExtra(FlutterFirebaseMessagingMyWorldLinkConstants.NOTIFICATION_LINK, link);
       intent.putExtra(FlutterFirebaseMessagingMyWorldLinkConstants.NOTIFICATION_DATE, date);
       intent.putExtra(FlutterFirebaseMessagingMyWorldLinkConstants.NOTIFICATION_NOTICE, notice);
@@ -177,8 +177,8 @@ public class FlutterFirebaseMessagingBackgroundService extends JobIntentService 
     }
   }
 
-  private static PendingIntent getDeletePendingIntent(Context context, String messageId, String subject, int type, String notice, String link, Long date,
-                                                      String image, String singleMessageId, String executionId, String msgLabel, String url, String postType,
+  private static PendingIntent getDeletePendingIntent(Context context, String messageId, String subject, String type, String notice, String link, String date,
+                                                      String image, String singleMessageId, int executionId, String msgLabel, String url, int postType,
                                                       String operator, String uniqueIdentifier) {
     Intent deleteIntent = new Intent(context, FirebaseCustomNotificationHandler.class);
     deleteIntent.setAction(FlutterFirebaseMessagingMyWorldLinkConstants.NOTIFICATION_DELETE);
