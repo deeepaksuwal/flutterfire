@@ -72,7 +72,7 @@ public class FlutterFirebaseMessagingBackgroundService extends JobIntentService 
   private static void handleNotificationOnBackgroundOnly(Intent messageIntent, Context context) {
     int type = 0;
     String link = "";
-    String date="";
+    Long date;
     String notice = "";
     Bundle bundle = new Bundle();
     String messageId = "";
@@ -91,8 +91,8 @@ public class FlutterFirebaseMessagingBackgroundService extends JobIntentService 
     if (type == 1 || type == 2 || type == 7) {
       Intent intent;
       link = bundle.getString("link");
-      date = bundle.getString("date");
-      notice = bundle.getString("message");
+      date = Calendar.getInstance().getTimeInMillis();
+      notice = bundle.getString("notice");
       image = bundle.getString("image");
       messageId = bundle.getString("Message_Id");
       subject = bundle.getString("subject");
@@ -166,7 +166,7 @@ public class FlutterFirebaseMessagingBackgroundService extends JobIntentService 
     }
   }
 
-  private static PendingIntent getDeletePendingIntent(Context context, String messageId, String subject, int type, String notice, String link, String date,
+  private static PendingIntent getDeletePendingIntent(Context context, String messageId, String subject, int type, String notice, String link, Long date,
                                                       String image, String singleMessageId, int executionId, String msgLabel) {
     Intent deleteIntent = new Intent(context, FirebaseCustomNotificationHandler.class);
     deleteIntent.setAction(FlutterFirebaseMessagingMyWorldLinkConstants.NOTIFICATION_DELETE);

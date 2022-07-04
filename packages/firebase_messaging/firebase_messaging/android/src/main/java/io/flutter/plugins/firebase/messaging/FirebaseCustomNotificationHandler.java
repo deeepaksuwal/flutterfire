@@ -20,11 +20,12 @@ public class FirebaseCustomNotificationHandler extends BroadcastReceiver {
   private String executionId = "";
   private String msgLabel = "";
   private Intent finalIntent;
-  private String mDate;
-  private String type = "";
   private String notificationId = "";
   private static final String TAG = FirebaseCustomNotificationHandler.class.getSimpleName();
   String token = "";
+  private long date;
+  private Date mDate;
+  private int type = 0;
   String username = "";
 
   @Override
@@ -81,18 +82,16 @@ public class FirebaseCustomNotificationHandler extends BroadcastReceiver {
     }
   }
 
-  private String _getType(Intent intent) {
-    if (intent.getExtras().getString(FlutterFirebaseMessagingMyWorldLinkConstants.NOTIFICATION_DATE) != null) {
-      return intent.getExtras().getString(FlutterFirebaseMessagingMyWorldLinkConstants.NOTIFICATION_TYPE);
-    }
-    return "";
+  private int _getType(Intent intent) {
+    return intent.getExtras().getInt(FlutterFirebaseMessagingMyWorldLinkConstants.NOTIFICATION_TYPE);
   }
 
-  private String _getDate(Intent intent) {
-    if (intent.getExtras().getString(FlutterFirebaseMessagingMyWorldLinkConstants.NOTIFICATION_DATE) != null) {
-      return intent.getExtras().getString(FlutterFirebaseMessagingMyWorldLinkConstants.NOTIFICATION_DATE);
+  private Date _getDate(Intent intent) {
+    if (intent.getExtras().getLong(FlutterFirebaseMessagingMyWorldLinkConstants.NOTIFICATION_DATE) < 0) {
+      date = intent.getExtras().getLong(FlutterFirebaseMessagingMyWorldLinkConstants.NOTIFICATION_LINK);
+      return new Date(date);
     }
-    return "";
+    return new Date();
   }
 
   private String _getSubject(Intent intent) {
