@@ -17,13 +17,8 @@ public class FirebaseCustomNotificationHandler extends BroadcastReceiver {
   private String subject = "";
   private String image = "";
   private String singleMessageId = "";
-  private int executionId = 0;
+  private String executionId = "";
   private String msgLabel = "";
-  private String url = "";
-  private int postType = 0;
-  private String readStatus = "";
-  private String operator = "";
-  private String uniqueIdentifier = "";
   private Intent finalIntent;
   private String mDate;
   private String type = "";
@@ -45,12 +40,8 @@ public class FirebaseCustomNotificationHandler extends BroadcastReceiver {
       mDate = _getDate(intent);
       image = _getImage(intent);
       singleMessageId = _getSingleMessageId(intent);
-      executionId = _getExecutionId(intent);
+      executionId = String.valueOf(_getExecutionId(intent));
       msgLabel = _getMsgLabel(intent);
-      url = _getUrl(intent);
-      postType = _getPostType(intent);
-      operator = _getOperator(intent);
-      uniqueIdentifier = _getUniqueIdentifier(intent);
     }
     SharedPreferences preferences = context.getSharedPreferences("FlutterSharedPreferences", Context.MODE_PRIVATE);
     token = preferences.getString("flutter.PREFS_USER_TOKEN", "");
@@ -144,7 +135,7 @@ public class FirebaseCustomNotificationHandler extends BroadcastReceiver {
   }
 
   private int _getExecutionId(Intent intent) {
-    if (intent.getExtras().getInt(FlutterFirebaseMessagingMyWorldLinkConstants.NOTIFICATION_EXECUTION_ID) < 0 ) {
+    if (intent.getExtras().getInt(FlutterFirebaseMessagingMyWorldLinkConstants.NOTIFICATION_EXECUTION_ID) < 0) {
       return intent.getExtras().getInt(FlutterFirebaseMessagingMyWorldLinkConstants.NOTIFICATION_EXECUTION_ID, 0);
     }
     return 0;
@@ -153,34 +144,6 @@ public class FirebaseCustomNotificationHandler extends BroadcastReceiver {
   private String _getMsgLabel(Intent intent) {
     if (intent.getExtras().getString(FlutterFirebaseMessagingMyWorldLinkConstants.NOTIFICATION_MSG_LABEL) != null) {
       return intent.getExtras().getString(FlutterFirebaseMessagingMyWorldLinkConstants.NOTIFICATION_MSG_LABEL, "");
-    }
-    return "";
-  }
-
-  private String _getUrl(Intent intent) {
-    if (intent.getExtras().getString(FlutterFirebaseMessagingMyWorldLinkConstants.NOTIFICATION_URL) != null) {
-      return intent.getExtras().getString(FlutterFirebaseMessagingMyWorldLinkConstants.NOTIFICATION_URL, "");
-    }
-    return "";
-  }
-
-  private int _getPostType(Intent intent) {
-    if (intent.getExtras().getInt(FlutterFirebaseMessagingMyWorldLinkConstants.NOTIFICATION_POSTTYPE) <0) {
-      return intent.getExtras().getInt(FlutterFirebaseMessagingMyWorldLinkConstants.NOTIFICATION_POSTTYPE, 0);
-    }
-    return 0;
-  }
-
-  private String _getOperator(Intent intent) {
-    if (intent.getExtras().getString(FlutterFirebaseMessagingMyWorldLinkConstants.NOTIFICATION_OPERATOR) != null) {
-      return intent.getExtras().getString(FlutterFirebaseMessagingMyWorldLinkConstants.NOTIFICATION_OPERATOR, "");
-    }
-    return "";
-  }
-
-  private String _getUniqueIdentifier(Intent intent) {
-    if (intent.getExtras().getString(FlutterFirebaseMessagingMyWorldLinkConstants.NOTIFICATION_UNIQUE_IDENTIFIER) != null) {
-      return intent.getExtras().getString(FlutterFirebaseMessagingMyWorldLinkConstants.NOTIFICATION_UNIQUE_IDENTIFIER, "");
     }
     return "";
   }

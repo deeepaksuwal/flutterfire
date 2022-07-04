@@ -26,7 +26,7 @@ public class InsertNotificationDBHelper extends SQLiteOpenHelper {
   // Column Names
   private static String ID = "id";
   private static String SUBJECT = "subject";
-  private static String MESSAGE = "message";
+  private static String NOTICE = "notice";
   private static String LINK = "link";
   private static String DATE = "date";
   private static String PRIORITY = "priority";
@@ -39,10 +39,6 @@ public class InsertNotificationDBHelper extends SQLiteOpenHelper {
   private static String SINGLE_MESSAGE_ID = "single_message_id";
   private static String EXECUTION_ID = "execution_id";
   private static String MSG_LABEL = "msg_label";
-  private static String URL = "url";
-  private static String POSTTYPE = "posttype";
-  private static String OPERATOR = "operator";
-  private static String UNIQUE_IDENTIFIER = "unique_identifier";
 
 
   @Override
@@ -58,7 +54,7 @@ public class InsertNotificationDBHelper extends SQLiteOpenHelper {
     ContentValues contentValues = new ContentValues();
     contentValues.put(ID, remoteMessage.getMessageId());
     contentValues.put(SUBJECT, remoteMessage.getData().get("subject"));
-    contentValues.put(MESSAGE, remoteMessage.getData().get("message"));
+    contentValues.put(NOTICE, remoteMessage.getData().get("notice"));
     contentValues.put(LINK, remoteMessage.getData().get("link"));
     contentValues.put(DATE, remoteMessage.getData().get("date"));
     contentValues.put(PRIORITY, remoteMessage.getPriority());
@@ -69,10 +65,6 @@ public class InsertNotificationDBHelper extends SQLiteOpenHelper {
     contentValues.put(SINGLE_MESSAGE_ID, remoteMessage.getData().get("single_message_id"));
     contentValues.put(EXECUTION_ID, remoteMessage.getData().get("execution_id"));
     contentValues.put(MSG_LABEL, remoteMessage.getData().get("msg_label"));
-    contentValues.put(URL, remoteMessage.getData().get("url"));
-    contentValues.put(POSTTYPE, remoteMessage.getData().get("posttype"));
-    contentValues.put(OPERATOR, remoteMessage.getData().get("operator"));
-    contentValues.put(UNIQUE_IDENTIFIER, remoteMessage.getData().get("unique_identifier"));
     contentValues.put(STATUS, remoteMessage.getData().get("status") );
     contentValues.put(USERNAME, username);
     SQLiteDatabase db = this.getWritableDatabase();

@@ -70,7 +70,7 @@ public class FlutterFirebaseMessagingBackgroundService extends JobIntentService 
   }
 
   private static void handleNotificationOnBackgroundOnly(Intent messageIntent, Context context) {
-    String type = "";
+    int type = 0;
     String link = "";
     String date="";
     String notice = "";
@@ -81,18 +81,14 @@ public class FlutterFirebaseMessagingBackgroundService extends JobIntentService 
     String singleMessageId = "";
     int executionId ;
     String msgLabel = "";
-    String url = "";
-    int postType;
-    String operator = "";
-    String uniqueIdentifier = "";
     RemoteMessage message = messageIntent.getParcelableExtra(FlutterFirebaseMessagingUtils.EXTRA_REMOTE_MESSAGE);
     Log.e(TAG, "MESSAGEID" + message.getData());
     for (Map.Entry<String, String> entry : message.getData().entrySet()) {
       bundle.putString(entry.getKey(), entry.getValue());
     }
-    postType = bundle.getInt("posttype");
+    type = bundle.getInt("posttype");
 
-    if (postType == 1 || postType == 2 || postType == 7) {
+    if (type == 1 || type == 2 || type == 7) {
       Intent intent;
       link = bundle.getString("link");
       date = bundle.getString("date");
@@ -103,10 +99,7 @@ public class FlutterFirebaseMessagingBackgroundService extends JobIntentService 
       singleMessageId = bundle.getString("single_message_id");
       executionId = bundle.getInt("execution_id");
       msgLabel = bundle.getString("msg_label");
-      url = bundle.getString("url");
-      type = bundle.getString("type");
-      operator = bundle.getString("operator");
-      uniqueIdentifier = bundle.getString("unique_identifier");
+      type = bundle.getInt("type");
 
       Random randInt = new Random();
       int randomInt = randInt.nextInt(100000);
@@ -114,8 +107,8 @@ public class FlutterFirebaseMessagingBackgroundService extends JobIntentService 
       mNotificationManager = (NotificationManager)
         context.getSystemService(Context.NOTIFICATION_SERVICE);
       intent = new Intent(context, FirebaseCustomNotificationHandler.class);
-      intent.setAction(getAction(postType));
-      geExtra(context, intent, postType, link);
+      intent.setAction(getAction(type));
+      geExtra(context, intent, type, link);
       intent.putExtra(FlutterFirebaseMessagingMyWorldLinkConstants.NOTIFICATION_LINK, link);
       intent.putExtra(FlutterFirebaseMessagingMyWorldLinkConstants.NOTIFICATION_DATE, date);
       intent.putExtra(FlutterFirebaseMessagingMyWorldLinkConstants.NOTIFICATION_NOTICE, notice);
@@ -125,15 +118,11 @@ public class FlutterFirebaseMessagingBackgroundService extends JobIntentService 
       intent.putExtra(FlutterFirebaseMessagingMyWorldLinkConstants.NOTIFICATION_SINGLE_MESSAGE_ID, singleMessageId);
       intent.putExtra(FlutterFirebaseMessagingMyWorldLinkConstants.NOTIFICATION_EXECUTION_ID, executionId);
       intent.putExtra(FlutterFirebaseMessagingMyWorldLinkConstants.NOTIFICATION_MSG_LABEL, msgLabel);
-      intent.putExtra(FlutterFirebaseMessagingMyWorldLinkConstants.NOTIFICATION_URL, url);
-      intent.putExtra(FlutterFirebaseMessagingMyWorldLinkConstants.NOTIFICATION_POSTTYPE, postType);
-      intent.putExtra(FlutterFirebaseMessagingMyWorldLinkConstants.NOTIFICATION_OPERATOR, operator);
-      intent.putExtra(FlutterFirebaseMessagingMyWorldLinkConstants.NOTIFICATION_UNIQUE_IDENTIFIER, uniqueIdentifier);
       intent.putExtra(FlutterFirebaseMessagingMyWorldLinkConstants.NOTIFICATION_ID, messageId);
       intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK | Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_NEW_TASK);
       PendingIntent contentIntent = PendingIntent.getBroadcast(context, randomInt, intent, PendingIntent.FLAG_CANCEL_CURRENT);
       PendingIntent deletePendingIntent = getDeletePendingIntent(context, messageId, subject, type, notice, link, date,
-        image,singleMessageId,executionId,msgLabel,url,postType,operator,uniqueIdentifier);
+        image,singleMessageId,executionId,msgLabel);
 
       int importance = 0;
       if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.N) {
@@ -177,9 +166,8 @@ public class FlutterFirebaseMessagingBackgroundService extends JobIntentService 
     }
   }
 
-  private static PendingIntent getDeletePendingIntent(Context context, String messageId, String subject, String type, String notice, String link, String date,
-                                                      String image, String singleMessageId, int executionId, String msgLabel, String url, int postType,
-                                                      String operator, String uniqueIdentifier) {
+  private static PendingIntent getDeletePendingIntent(Context context, String messageId, String subject, int type, String notice, String link, String date,
+                                                      String image, String singleMessageId, int executionId, String msgLabel) {
     Intent deleteIntent = new Intent(context, FirebaseCustomNotificationHandler.class);
     deleteIntent.setAction(FlutterFirebaseMessagingMyWorldLinkConstants.NOTIFICATION_DELETE);
     deleteIntent.putExtra(FlutterFirebaseMessagingMyWorldLinkConstants.NOTIFICATION_ID, messageId);
@@ -192,10 +180,6 @@ public class FlutterFirebaseMessagingBackgroundService extends JobIntentService 
     deleteIntent.putExtra(FlutterFirebaseMessagingMyWorldLinkConstants.NOTIFICATION_SINGLE_MESSAGE_ID, singleMessageId);
     deleteIntent.putExtra(FlutterFirebaseMessagingMyWorldLinkConstants.NOTIFICATION_EXECUTION_ID, executionId);
     deleteIntent.putExtra(FlutterFirebaseMessagingMyWorldLinkConstants.NOTIFICATION_MSG_LABEL, msgLabel);
-    deleteIntent.putExtra(FlutterFirebaseMessagingMyWorldLinkConstants.NOTIFICATION_URL, url);
-    deleteIntent.putExtra(FlutterFirebaseMessagingMyWorldLinkConstants.NOTIFICATION_POSTTYPE, postType);
-    deleteIntent.putExtra(FlutterFirebaseMessagingMyWorldLinkConstants.NOTIFICATION_OPERATOR, operator);
-    deleteIntent.putExtra(FlutterFirebaseMessagingMyWorldLinkConstants.NOTIFICATION_UNIQUE_IDENTIFIER, uniqueIdentifier);
     return PendingIntent.getBroadcast(context, 0, deleteIntent, 0);
   }
 
