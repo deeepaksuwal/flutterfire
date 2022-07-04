@@ -56,7 +56,7 @@ public class FirebaseCustomNotificationHandler extends BroadcastReceiver {
     SharedPreferences preferences = context.getSharedPreferences("FlutterSharedPreferences", Context.MODE_PRIVATE);
     token = preferences.getString("flutter.PREFS_USER_TOKEN", "");
     username = preferences.getString("flutter.PREFS_USER_DEFAULT", "");
-    preferences.edit().putString("flutter.PREFS_USER_READ_STATUS_NOTIFICATION", "read").apply();
+    preferences.edit().putBoolean("flutter.PREFS_USER_READ_STATUS_NOTIFICATION", true).apply();
     handleNotificationType(context, intent);
 
   }

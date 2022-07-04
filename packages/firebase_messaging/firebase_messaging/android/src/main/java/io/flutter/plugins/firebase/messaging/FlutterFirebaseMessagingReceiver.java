@@ -34,7 +34,7 @@ public class FlutterFirebaseMessagingReceiver extends BroadcastReceiver {
 
     SharedPreferences prefs = context.getSharedPreferences("FlutterSharedPreferences", Context.MODE_PRIVATE);
     String username =  prefs.getString("flutter." + "PREFS_USER_DEFAULT", "");
-    prefs.edit().putString("flutter.PREFS_USER_READ_STATUS_NOTIFICATION", "read").apply();
+    prefs.edit().putBoolean("flutter.PREFS_USER_READ_STATUS_NOTIFICATION", true).apply();
     InsertNotificationDBHelper dbHelper = new InsertNotificationDBHelper(context);
     dbHelper.addNotification(remoteMessage,username);
 
