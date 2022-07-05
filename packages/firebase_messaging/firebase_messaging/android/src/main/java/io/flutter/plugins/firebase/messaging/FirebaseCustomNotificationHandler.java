@@ -19,8 +19,8 @@ public class FirebaseCustomNotificationHandler extends BroadcastReceiver {
   private String singleMessageId = "";
   private String executionId = "";
   private String msgLabel = "";
+  private String fcmResponseId = "";
   private Intent finalIntent;
-  private String notificationId = "";
   private static final String TAG = FirebaseCustomNotificationHandler.class.getSimpleName();
   String token = "";
   private long date;
@@ -34,7 +34,6 @@ public class FirebaseCustomNotificationHandler extends BroadcastReceiver {
     finalIntent = intent;
 
     if (intent.getExtras() != null) {
-      notificationId = _getNotificationID(intent);
       notice = _getNotice(intent);
       link = _getLink(intent);
       subject = _getSubject(intent);
@@ -42,6 +41,7 @@ public class FirebaseCustomNotificationHandler extends BroadcastReceiver {
       image = _getImage(intent);
       singleMessageId = _getSingleMessageId(intent);
       executionId = String.valueOf(_getExecutionId(intent));
+      fcmResponseId = String.valueOf(_getFCMResponseId(intent));
       msgLabel = _getMsgLabel(intent);
     }
     SharedPreferences preferences = context.getSharedPreferences("FlutterSharedPreferences", Context.MODE_PRIVATE);
@@ -115,10 +115,6 @@ public class FirebaseCustomNotificationHandler extends BroadcastReceiver {
     return "";
   }
 
-  private String _getNotificationID(Intent intent) {
-    return intent.getExtras().getString(FlutterFirebaseMessagingMyWorldLinkConstants.NOTIFICATION_ID, "");
-  }
-
   private String _getImage(Intent intent) {
     if (intent.getExtras().getString(FlutterFirebaseMessagingMyWorldLinkConstants.NOTIFICATION_IMAGE) != null) {
       return intent.getExtras().getString(FlutterFirebaseMessagingMyWorldLinkConstants.NOTIFICATION_IMAGE, "");
@@ -129,6 +125,13 @@ public class FirebaseCustomNotificationHandler extends BroadcastReceiver {
   private String _getSingleMessageId(Intent intent) {
     if (intent.getExtras().getString(FlutterFirebaseMessagingMyWorldLinkConstants.NOTIFICATION_SINGLE_MESSAGE_ID) != null) {
       return intent.getExtras().getString(FlutterFirebaseMessagingMyWorldLinkConstants.NOTIFICATION_SINGLE_MESSAGE_ID, "");
+    }
+    return "";
+  }
+
+   private String _getFCMResponseId(Intent intent) {
+    if (intent.getExtras().getString(FlutterFirebaseMessagingMyWorldLinkConstants.NOTIFICATION_FCM_RESPONSE_ID) != null) {
+      return intent.getExtras().getString(FlutterFirebaseMessagingMyWorldLinkConstants.NOTIFICATION_FCM_RESPONSE_ID, "");
     }
     return "";
   }
