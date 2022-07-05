@@ -86,7 +86,7 @@ public class FlutterFirebaseMessagingBackgroundService extends JobIntentService 
     for (Map.Entry<String, String> entry : message.getData().entrySet()) {
       bundle.putString(entry.getKey(), entry.getValue());
     }
-    type = bundle.getInt("posttype");
+    type = bundle.getInt("type");
 
     if (type == 1 || type == 2 || type == 7) {
       Intent intent;
@@ -99,7 +99,6 @@ public class FlutterFirebaseMessagingBackgroundService extends JobIntentService 
       executionId = bundle.getInt("execution_id");
       fcmResponseId = bundle.getString("fcm_response_id");
       msgLabel = bundle.getString("msg_label");
-      type = bundle.getInt("type");
 
       Random randInt = new Random();
       int randomInt = randInt.nextInt(100000);
