@@ -21,7 +21,7 @@ import java.util.Map;
 
 public class FirebaseMessagingMyWorldLinkUtils {
   public static void sendNotificationReadStatus(final Context context,final String userAction,
-                                                final String messageType, final String singleMessageId, final String username, final String executionId,final String token) {
+                                                final String messageType, final String username, final String executionId,final String token) {
     RequestQueue requestQueue = Volley.newRequestQueue(context);
     String url = "https://custmobileapp.worldlink.com.np/app/v2/notification/" + username + "/action/" + executionId;
     Log.e("URL VOLLEY PACKAGE", url);
@@ -37,7 +37,6 @@ public class FirebaseMessagingMyWorldLinkUtils {
         HashMap<String, String> hashMap = new HashMap<String, String>();
         hashMap.put("user_action", userAction);
         hashMap.put("message_type", messageType);
-        hashMap.put("message_id", singleMessageId);
 //                hashMap.put("token",HelperMethods.getKeyFromPref(context));
         return hashMap;
       }
