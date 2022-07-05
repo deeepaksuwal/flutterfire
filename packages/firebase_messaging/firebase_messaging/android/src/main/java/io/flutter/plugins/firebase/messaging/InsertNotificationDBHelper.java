@@ -27,7 +27,7 @@ public class InsertNotificationDBHelper extends SQLiteOpenHelper {
   // Column Names
   private static String ID = "id";
   private static String SUBJECT = "subject";
-  private static String NOTICE = "notice";
+  private static String NOTICE = "message";
   private static String LINK = "link";
   private static String DATE = "date";
   private static String PRIORITY = "priority";
