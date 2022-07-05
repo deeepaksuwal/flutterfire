@@ -26,7 +26,7 @@ public class InsertNotificationDBHelper extends SQLiteOpenHelper {
   String TABLE_NAME = "NotificationDb";
 
   // Column Names
-  private static String ID = "_id";
+  private static String ID = "id";
   private static String ACCOUNT_STATUS_DISABLE = "account_status_disable";
   private static String DATE = "date";
   private static String EXECUTION_ID = "execution_id";
