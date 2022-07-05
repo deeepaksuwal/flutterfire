@@ -70,7 +70,7 @@ public class FlutterFirebaseMessagingBackgroundService extends JobIntentService 
   }
 
   private static void handleNotificationOnBackgroundOnly(Intent messageIntent, Context context) {
-    int type = 0;
+    int type;
     String link = "";
     Long date;
     String notice = "";
@@ -79,15 +79,14 @@ public class FlutterFirebaseMessagingBackgroundService extends JobIntentService 
     String image = "";
     String singleMessageId = "";
     String fcmResponseId = "";
-    int executionId ;
+    int executionId;
     String msgLabel = "";
     RemoteMessage message = messageIntent.getParcelableExtra(FlutterFirebaseMessagingUtils.EXTRA_REMOTE_MESSAGE);
     Log.e(TAG, "MESSAGEID" + message.getData());
     for (Map.Entry<String, String> entry : message.getData().entrySet()) {
       bundle.putString(entry.getKey(), entry.getValue());
     }
-    type = bundle.getInt("type");
-
+    type = Integer.parseInt(bundle.getString("type"));
     if (type == 1 || type == 2 || type == 7) {
       Intent intent;
       link = bundle.getString("link");
@@ -120,8 +119,8 @@ public class FlutterFirebaseMessagingBackgroundService extends JobIntentService 
       intent.putExtra(FlutterFirebaseMessagingMyWorldLinkConstants.NOTIFICATION_MSG_LABEL, msgLabel);
       intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK | Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_NEW_TASK);
       PendingIntent contentIntent = PendingIntent.getBroadcast(context, randomInt, intent, PendingIntent.FLAG_CANCEL_CURRENT);
-      PendingIntent deletePendingIntent = getDeletePendingIntent(context, fcmResponseId,subject, type, notice, link, date,
-        image,singleMessageId,executionId,msgLabel);
+      PendingIntent deletePendingIntent = getDeletePendingIntent(context, fcmResponseId, subject, type, notice, link, date,
+        image, singleMessageId, executionId, msgLabel);
 
       int importance = 0;
       if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.N) {
