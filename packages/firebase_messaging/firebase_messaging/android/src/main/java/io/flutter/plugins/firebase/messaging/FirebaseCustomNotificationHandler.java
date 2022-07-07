@@ -44,6 +44,8 @@ public class FirebaseCustomNotificationHandler extends BroadcastReceiver {
       fcmResponseId = String.valueOf(_getFCMResponseId(intent));
       msgLabel = _getMsgLabel(intent);
     }
+
+    Log.d(TAG, "handleNotificationType onReceive: HERE");
     SharedPreferences preferences = context.getSharedPreferences("FlutterSharedPreferences", Context.MODE_PRIVATE);
     token = preferences.getString("flutter.PREFS_USER_TOKEN", "");
     username = preferences.getString("flutter.PREFS_USER_DEFAULT", "");
@@ -55,10 +57,12 @@ public class FirebaseCustomNotificationHandler extends BroadcastReceiver {
   private void handleNotificationType(Context context, Intent intent) {
     switch (intent.getAction()) {
       case FlutterFirebaseMessagingMyWorldLinkConstants.NOTIFICATION_DELETE:
+        Log.d(TAG, "handleNotificationType: delete");
         FirebaseMessagingMyWorldLinkUtils.sendNotificationReadStatus(context, "dismiss", msgLabel, username, executionId, token);
         break;
 
       case FlutterFirebaseMessagingMyWorldLinkConstants.NOTIFICATION_TYPE_1:
+        Log.d(TAG, "handleNotificationType: notification 1");
         String appPackageName = intent.getExtras().getString(FlutterFirebaseMessagingMyWorldLinkConstants.NOTIFICATION_TYPE_1_DATA);
         try {
           finalIntent = new Intent(Intent.ACTION_VIEW, Uri.parse("market://details?id=" + appPackageName));
@@ -71,6 +75,7 @@ public class FirebaseCustomNotificationHandler extends BroadcastReceiver {
         break;
 
       case FlutterFirebaseMessagingMyWorldLinkConstants.NOTIFICATION_TYPE_2:
+        Log.d(TAG, "handleNotificationType: notification 2");
         link = intent.getExtras().getString(FlutterFirebaseMessagingMyWorldLinkConstants.NOTIFICATION_LINK);
         if (!link.startsWith("http://") && !link.startsWith("https://"))
           link = "http://" + link;
@@ -129,7 +134,7 @@ public class FirebaseCustomNotificationHandler extends BroadcastReceiver {
     return "";
   }
 
-   private String _getFCMResponseId(Intent intent) {
+  private String _getFCMResponseId(Intent intent) {
     if (intent.getExtras().getString(FlutterFirebaseMessagingMyWorldLinkConstants.NOTIFICATION_FCM_RESPONSE_ID) != null) {
       return intent.getExtras().getString(FlutterFirebaseMessagingMyWorldLinkConstants.NOTIFICATION_FCM_RESPONSE_ID, "");
     }
