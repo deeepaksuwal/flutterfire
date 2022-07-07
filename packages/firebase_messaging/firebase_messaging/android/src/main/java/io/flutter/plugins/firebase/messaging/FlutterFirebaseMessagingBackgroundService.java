@@ -96,7 +96,7 @@ public class FlutterFirebaseMessagingBackgroundService extends JobIntentService 
       image = bundle.getString("image");
       subject = bundle.getString("subject");
       singleMessageId = bundle.getString("single_message_id");
-      executionId = bundle.getInt("execution_id");
+      executionId = Integer.parseInt(bundle.getString("execution_id"));
       fcmResponseId = bundle.getString("fcm_response_id");
       msgLabel = bundle.getString("msg_label");
 
