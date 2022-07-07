@@ -21,7 +21,7 @@ public class FirebaseCustomNotificationHandler extends BroadcastReceiver {
   private String msgLabel = "";
   private String fcmResponseId = "";
   private Intent finalIntent;
-  private static final String TAG = FirebaseCustomNotificationHandler.class.getSimpleName();
+  private static final String TAG = "FirebaseCustomNotificationHandler";
   String token = "";
   private long date;
   private Date mDate;
@@ -44,8 +44,9 @@ public class FirebaseCustomNotificationHandler extends BroadcastReceiver {
       fcmResponseId = String.valueOf(_getFCMResponseId(intent));
       msgLabel = _getMsgLabel(intent);
     }
+    Log.d(TAG, "handleNotificationType onReceive: ");
 
-    Log.d(TAG, "handleNotificationType onReceive: HERE");
+    Log.d(TAG, "handleNotificationType onReceive: HERE"+intent.getAction());
     SharedPreferences preferences = context.getSharedPreferences("FlutterSharedPreferences", Context.MODE_PRIVATE);
     token = preferences.getString("flutter.PREFS_USER_TOKEN", "");
     username = preferences.getString("flutter.PREFS_USER_DEFAULT", "");

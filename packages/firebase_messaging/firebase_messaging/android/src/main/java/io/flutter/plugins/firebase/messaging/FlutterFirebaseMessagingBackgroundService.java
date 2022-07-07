@@ -82,11 +82,12 @@ public class FlutterFirebaseMessagingBackgroundService extends JobIntentService 
     int executionId;
     String msgLabel = "";
     RemoteMessage message = messageIntent.getParcelableExtra(FlutterFirebaseMessagingUtils.EXTRA_REMOTE_MESSAGE);
-    Log.e(TAG, "MESSAGEID" + message.getData());
+    Log.e(TAG, "handleNotificationOnBackgroundOnly DATA " + message.getData());
     for (Map.Entry<String, String> entry : message.getData().entrySet()) {
       bundle.putString(entry.getKey(), entry.getValue());
     }
     type = Integer.parseInt(bundle.getString("type"));
+    Log.d(TAG, "handleNotificationOnBackgroundOnly: " + type);
     if (type == 1 || type == 2 || type == 7) {
       Intent intent;
       link = bundle.getString("link");
@@ -99,6 +100,7 @@ public class FlutterFirebaseMessagingBackgroundService extends JobIntentService 
       fcmResponseId = bundle.getString("fcm_response_id");
       msgLabel = bundle.getString("msg_label");
 
+      Log.d(TAG, "handleNotificationOnBackgroundOnly: " + executionId);
       Random randInt = new Random();
       int randomInt = randInt.nextInt(100000);
       NotificationManager mNotificationManager = null;
