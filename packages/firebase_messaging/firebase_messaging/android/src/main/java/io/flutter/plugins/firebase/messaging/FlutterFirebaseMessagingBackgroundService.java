@@ -169,6 +169,8 @@ public class FlutterFirebaseMessagingBackgroundService extends JobIntentService 
   private static PendingIntent getDeletePendingIntent(Context context, String fcmResponseId, String subject, int type, String notice, String link, Long date,
                                                       String image, String singleMessageId, int executionId, String msgLabel) {
     Intent deleteIntent = new Intent(context, FirebaseCustomNotificationHandler.class);
+
+    Log.d(TAG, "getDeletePendingIntent: execution id " + executionId);
     deleteIntent.setAction(FlutterFirebaseMessagingMyWorldLinkConstants.NOTIFICATION_DELETE);
     deleteIntent.putExtra(FlutterFirebaseMessagingMyWorldLinkConstants.NOTIFICATION_FCM_RESPONSE_ID, fcmResponseId);
     deleteIntent.putExtra(FlutterFirebaseMessagingMyWorldLinkConstants.NOTIFICATION_TYPE, type);

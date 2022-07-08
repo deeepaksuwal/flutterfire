@@ -17,7 +17,7 @@ public class FirebaseCustomNotificationHandler extends BroadcastReceiver {
   private String subject = "";
   private String image = "";
   private String singleMessageId = "";
-  private int executionId = 0;
+  private int executionId;
   private String msgLabel = "";
   private String fcmResponseId = "";
   private Intent finalIntent;
@@ -45,7 +45,8 @@ public class FirebaseCustomNotificationHandler extends BroadcastReceiver {
       type = _getType(intent);
       msgLabel = _getMsgLabel(intent);
     }
-    Log.d(TAG, "handleNotificationType onReceive: exec "+executionId);
+    Log.d(TAG, "handleNotificationType onReceive: exec " + executionId);
+    Log.d(TAG, "handleNotificationType onReceive: fcmresponse id  " + fcmResponseId);
 
     Log.d(TAG, "handleNotificationType onReceive: HERE" + intent.getAction());
 
@@ -54,7 +55,6 @@ public class FirebaseCustomNotificationHandler extends BroadcastReceiver {
     username = preferences.getString("flutter.PREFS_USER_DEFAULT", "");
     preferences.edit().putBoolean("flutter.PREFS_USER_READ_STATUS_NOTIFICATION", true).apply();
     handleNotificationType(context, intent);
-
   }
 
   private void handleNotificationType(Context context, Intent intent) {
@@ -144,13 +144,16 @@ public class FirebaseCustomNotificationHandler extends BroadcastReceiver {
 
   private String _getFCMResponseId(Intent intent) {
     if (intent.getExtras().getString(FlutterFirebaseMessagingMyWorldLinkConstants.NOTIFICATION_FCM_RESPONSE_ID) != null) {
+      Log.d(TAG, "_getFCMResponseId: " + intent.getExtras().getString(FlutterFirebaseMessagingMyWorldLinkConstants.NOTIFICATION_FCM_RESPONSE_ID));
+
       return intent.getExtras().getString(FlutterFirebaseMessagingMyWorldLinkConstants.NOTIFICATION_FCM_RESPONSE_ID, "");
     }
     return "";
   }
 
   private int _getExecutionId(Intent intent) {
-      return intent.getExtras().getInt(FlutterFirebaseMessagingMyWorldLinkConstants.NOTIFICATION_EXECUTION_ID);
+    Log.d(TAG, "_getExecutionId: " + intent.getExtras().getInt(FlutterFirebaseMessagingMyWorldLinkConstants.NOTIFICATION_EXECUTION_ID));
+    return intent.getExtras().getInt(FlutterFirebaseMessagingMyWorldLinkConstants.NOTIFICATION_EXECUTION_ID);
   }
 
   private String _getMsgLabel(Intent intent) {
