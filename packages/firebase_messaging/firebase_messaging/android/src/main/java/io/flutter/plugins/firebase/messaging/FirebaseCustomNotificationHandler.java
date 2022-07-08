@@ -17,7 +17,7 @@ public class FirebaseCustomNotificationHandler extends BroadcastReceiver {
   private String subject = "";
   private String image = "";
   private String singleMessageId = "";
-  private String executionId = "";
+  private int executionId = 0;
   private String msgLabel = "";
   private String fcmResponseId = "";
   private Intent finalIntent;
@@ -40,13 +40,15 @@ public class FirebaseCustomNotificationHandler extends BroadcastReceiver {
       mDate = _getDate(intent);
       image = _getImage(intent);
       singleMessageId = _getSingleMessageId(intent);
-      executionId = String.valueOf(_getExecutionId(intent));
+      executionId = _getExecutionId(intent);
       fcmResponseId = String.valueOf(_getFCMResponseId(intent));
+      type = _getType(intent);
       msgLabel = _getMsgLabel(intent);
     }
     Log.d(TAG, "handleNotificationType onReceive: ");
 
-    Log.d(TAG, "handleNotificationType onReceive: HERE"+intent.getAction());
+    Log.d(TAG, "handleNotificationType onReceive: HERE" + intent.getAction());
+
     SharedPreferences preferences = context.getSharedPreferences("FlutterSharedPreferences", Context.MODE_PRIVATE);
     token = preferences.getString("flutter.PREFS_USER_TOKEN", "");
     username = preferences.getString("flutter.PREFS_USER_DEFAULT", "");
@@ -59,7 +61,7 @@ public class FirebaseCustomNotificationHandler extends BroadcastReceiver {
     switch (intent.getAction()) {
       case FlutterFirebaseMessagingMyWorldLinkConstants.NOTIFICATION_DELETE:
         Log.d(TAG, "handleNotificationType: delete");
-        FirebaseMessagingMyWorldLinkUtils.sendNotificationReadStatus(context, "dismiss", msgLabel, username, executionId, token);
+        FirebaseMessagingMyWorldLinkUtils.sendNotificationReadStatus(context, "dismiss", msgLabel, username, String.valueOf(executionId), token);
         break;
 
       case FlutterFirebaseMessagingMyWorldLinkConstants.NOTIFICATION_TYPE_1:
@@ -72,7 +74,7 @@ public class FirebaseCustomNotificationHandler extends BroadcastReceiver {
         }
         finalIntent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_SINGLE_TOP | Intent.FLAG_ACTIVITY_NEW_TASK);
         context.startActivity(finalIntent);
-        FirebaseMessagingMyWorldLinkUtils.sendNotificationReadStatus(context, "seen", msgLabel, username, executionId, token);
+        FirebaseMessagingMyWorldLinkUtils.sendNotificationReadStatus(context, "seen", msgLabel, username, String.valueOf(executionId), token);
         break;
 
       case FlutterFirebaseMessagingMyWorldLinkConstants.NOTIFICATION_TYPE_2:
@@ -82,9 +84,18 @@ public class FirebaseCustomNotificationHandler extends BroadcastReceiver {
           link = "http://" + link;
         intent = new Intent(Intent.ACTION_VIEW, Uri.parse(link));
         intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_SINGLE_TOP | Intent.FLAG_ACTIVITY_NEW_TASK);
-        FirebaseMessagingMyWorldLinkUtils.sendNotificationReadStatus(context, "seen", msgLabel, username, executionId, token);
+        FirebaseMessagingMyWorldLinkUtils.sendNotificationReadStatus(context, "seen", msgLabel, username, String.valueOf(executionId), token);
         context.startActivity(intent);
         break;
+
+      default:
+        intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_SINGLE_TOP | Intent.FLAG_ACTIVITY_NEW_TASK);
+
+        FirebaseMessagingMyWorldLinkUtils.sendNotificationReadStatus(context, "seen", msgLabel, username, String.valueOf(executionId), token);
+        context.startActivity(intent);
+
+        break;
+
     }
   }
 

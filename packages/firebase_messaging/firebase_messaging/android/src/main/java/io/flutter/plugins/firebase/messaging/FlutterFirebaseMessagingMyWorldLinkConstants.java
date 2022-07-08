@@ -17,6 +17,7 @@ public class FlutterFirebaseMessagingMyWorldLinkConstants {
   public static final String NOTIFICATION_TYPE_1 = "1";
   public static final String NOTIFICATION_TYPE_1_DATA = "packagename";
   public static final String NOTIFICATION_TYPE_2 = "2";
+  public static final String NOTIFICATION_TYPE_0 = "0";
 
   public static final String CHANNEL_ID = "customer_notification";
 

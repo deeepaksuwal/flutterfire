@@ -87,8 +87,8 @@ public class FlutterFirebaseMessagingBackgroundService extends JobIntentService 
       bundle.putString(entry.getKey(), entry.getValue());
     }
     type = Integer.parseInt(bundle.getString("type"));
-    Log.d(TAG, "handleNotificationOnBackgroundOnly: " + type);
-    if (type == 1 || type == 2 || type == 7) {
+    Log.d(TAG, "handleNotificationOnBackgroundOnly: type  " + type);
+//    if (type == 1 || type == 2 || type == 7) {
       Intent intent;
       link = bundle.getString("link");
       date = Calendar.getInstance().getTimeInMillis();
@@ -100,7 +100,7 @@ public class FlutterFirebaseMessagingBackgroundService extends JobIntentService 
       fcmResponseId = bundle.getString("fcm_response_id");
       msgLabel = bundle.getString("msg_label");
 
-      Log.d(TAG, "handleNotificationOnBackgroundOnly: " + executionId);
+      Log.d(TAG, "handleNotificationOnBackgroundOnly: execution id  " + executionId);
       Random randInt = new Random();
       int randomInt = randInt.nextInt(100000);
       NotificationManager mNotificationManager = null;
@@ -163,7 +163,7 @@ public class FlutterFirebaseMessagingBackgroundService extends JobIntentService 
 
       }
 
-    }
+//    }
   }
 
   private static PendingIntent getDeletePendingIntent(Context context, String fcmResponseId, String subject, int type, String notice, String link, Long date,
