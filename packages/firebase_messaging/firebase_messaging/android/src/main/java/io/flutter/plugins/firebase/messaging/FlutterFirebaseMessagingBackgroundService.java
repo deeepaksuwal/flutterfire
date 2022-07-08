@@ -169,7 +169,8 @@ public class FlutterFirebaseMessagingBackgroundService extends JobIntentService 
   private static PendingIntent getDeletePendingIntent(Context context, String fcmResponseId, String subject, int type, String notice, String link, Long date,
                                                       String image, String singleMessageId, int executionId, String msgLabel) {
     Intent deleteIntent = new Intent(context, FirebaseCustomNotificationHandler.class);
-
+    Random randInt = new Random();
+    int randomInt = randInt.nextInt(100000);
     Log.d(TAG, "getDeletePendingIntent: execution id " + executionId);
     deleteIntent.setAction(FlutterFirebaseMessagingMyWorldLinkConstants.NOTIFICATION_DELETE);
     deleteIntent.putExtra(FlutterFirebaseMessagingMyWorldLinkConstants.NOTIFICATION_FCM_RESPONSE_ID, fcmResponseId);
@@ -182,7 +183,7 @@ public class FlutterFirebaseMessagingBackgroundService extends JobIntentService 
     deleteIntent.putExtra(FlutterFirebaseMessagingMyWorldLinkConstants.NOTIFICATION_SINGLE_MESSAGE_ID, singleMessageId);
     deleteIntent.putExtra(FlutterFirebaseMessagingMyWorldLinkConstants.NOTIFICATION_EXECUTION_ID, executionId);
     deleteIntent.putExtra(FlutterFirebaseMessagingMyWorldLinkConstants.NOTIFICATION_MSG_LABEL, msgLabel);
-    return PendingIntent.getBroadcast(context, 0, deleteIntent, 0);
+    return PendingIntent.getBroadcast(context, randomInt, deleteIntent,  PendingIntent.FLAG_CANCEL_CURRENT);
   }
 
   private static void getBitmapAsyncAndDoWork(String imageUrl, Context context, NotificationCompat.Builder builder, NotificationManager mNotificationManager, int randomInt) {
