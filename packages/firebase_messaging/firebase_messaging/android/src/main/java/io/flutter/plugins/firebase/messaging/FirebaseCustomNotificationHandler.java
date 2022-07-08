@@ -45,7 +45,7 @@ public class FirebaseCustomNotificationHandler extends BroadcastReceiver {
       type = _getType(intent);
       msgLabel = _getMsgLabel(intent);
     }
-    Log.d(TAG, "handleNotificationType onReceive: ");
+    Log.d(TAG, "handleNotificationType onReceive: exec "+executionId);
 
     Log.d(TAG, "handleNotificationType onReceive: HERE" + intent.getAction());
 
@@ -89,11 +89,7 @@ public class FirebaseCustomNotificationHandler extends BroadcastReceiver {
         break;
 
       default:
-        intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_SINGLE_TOP | Intent.FLAG_ACTIVITY_NEW_TASK);
-
         FirebaseMessagingMyWorldLinkUtils.sendNotificationReadStatus(context, "seen", msgLabel, username, String.valueOf(executionId), token);
-        context.startActivity(intent);
-
         break;
 
     }
@@ -154,10 +150,7 @@ public class FirebaseCustomNotificationHandler extends BroadcastReceiver {
   }
 
   private int _getExecutionId(Intent intent) {
-    if (intent.getExtras().getInt(FlutterFirebaseMessagingMyWorldLinkConstants.NOTIFICATION_EXECUTION_ID) < 0) {
-      return intent.getExtras().getInt(FlutterFirebaseMessagingMyWorldLinkConstants.NOTIFICATION_EXECUTION_ID, 0);
-    }
-    return 0;
+      return intent.getExtras().getInt(FlutterFirebaseMessagingMyWorldLinkConstants.NOTIFICATION_EXECUTION_ID);
   }
 
   private String _getMsgLabel(Intent intent) {
