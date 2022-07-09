@@ -79,7 +79,7 @@ public class FlutterFirebaseMessagingBackgroundService extends JobIntentService 
     String image = "";
     String singleMessageId = "";
     String fcmResponseId = "";
-    int executionId;
+    int executionId = 0;
     String msgLabel = "";
     RemoteMessage message = messageIntent.getParcelableExtra(FlutterFirebaseMessagingUtils.EXTRA_REMOTE_MESSAGE);
     Log.e(TAG, "handleNotificationOnBackgroundOnly DATA " + message.getData());
@@ -88,7 +88,7 @@ public class FlutterFirebaseMessagingBackgroundService extends JobIntentService 
     }
     type = Integer.parseInt(bundle.getString("type"));
     Log.d(TAG, "handleNotificationOnBackgroundOnly: type  " + type);
-//    if (type == 1 || type == 2 || type == 7) {
+    if (type == 1 || type == 2 || type == 7) {
       Intent intent;
       link = bundle.getString("link");
       date = Calendar.getInstance().getTimeInMillis();
@@ -163,8 +163,14 @@ public class FlutterFirebaseMessagingBackgroundService extends JobIntentService 
 
       }
 
+    }else {
+      SharedPreferences preferences = context.getSharedPreferences("FlutterSharedPreferences", Context.MODE_PRIVATE);
+      String token = preferences.getString("flutter.PREFS_USER_TOKEN", "");
+      String username = preferences.getString("flutter.PREFS_USER_DEFAULT", "");
+
+      FirebaseMessagingMyWorldLinkUtils.sendNotificationReadStatus(context, "seen", msgLabel, username, String.valueOf(executionId), token);
     }
-//  }
+  }
 
   private static PendingIntent getDeletePendingIntent(Context context, String fcmResponseId, String subject, int type, String notice, String link, Long date,
                                                       String image, String singleMessageId, int executionId, String msgLabel) {
