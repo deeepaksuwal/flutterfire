@@ -183,7 +183,10 @@ public class FlutterFirebaseMessagingBackgroundService extends JobIntentService 
     deleteIntent.putExtra(FlutterFirebaseMessagingMyWorldLinkConstants.NOTIFICATION_SINGLE_MESSAGE_ID, singleMessageId);
     deleteIntent.putExtra(FlutterFirebaseMessagingMyWorldLinkConstants.NOTIFICATION_EXECUTION_ID, executionId);
     deleteIntent.putExtra(FlutterFirebaseMessagingMyWorldLinkConstants.NOTIFICATION_MSG_LABEL, msgLabel);
-    return PendingIntent.getBroadcast(context, randomInt, deleteIntent,  PendingIntent.FLAG_CANCEL_CURRENT);
+
+    Log.d(TAG, "getDeletePendingIntent: updated");
+    return PendingIntent.getBroadcast(context, randInt, deleteIntent, PendingIntent.FLAG_CANCEL_CURRENT);
+
   }
 
   private static void getBitmapAsyncAndDoWork(String imageUrl, Context context, NotificationCompat.Builder builder, NotificationManager mNotificationManager, int randomInt) {
