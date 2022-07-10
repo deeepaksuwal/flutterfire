@@ -198,10 +198,8 @@ public class FlutterFirebaseMessagingBackgroundService extends JobIntentService 
       PendingIntent contentIntent = PendingIntent.getBroadcast(context, randomInt, intent, PendingIntent.FLAG_CANCEL_CURRENT);
       PendingIntent deletePendingIntent = getDeletePendingIntent(context, fcmResponseId, subject, type, notice, link, date,
         image, singleMessageId, executionId, msgLabel);
+      sendBroadcast(intent);
 
-      NotificationCompat.Builder mBuilder = new NotificationCompat.Builder(context, FlutterFirebaseMessagingMyWorldLinkConstants.CHANNEL_ID);
-      mBuilder.setContentIntent(contentIntent);
-      mBuilder.setDeleteIntent(deletePendingIntent);
     }
   }
 
