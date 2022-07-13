@@ -256,12 +256,11 @@ public class FlutterFirebaseMessagingBackgroundService extends JobIntentService 
 
   private static void geExtra(Context context, Intent intent, int type, String link) {
     if (type == 1) {
-      if (!link.isEmpty())
+      if (link != null && !link.isEmpty())
         intent.putExtra(FlutterFirebaseMessagingMyWorldLinkConstants.NOTIFICATION_TYPE_1_DATA, link);
       else
         intent.putExtra(FlutterFirebaseMessagingMyWorldLinkConstants.NOTIFICATION_TYPE_1_DATA, context.getPackageName());
     }
-
   }
 
 
