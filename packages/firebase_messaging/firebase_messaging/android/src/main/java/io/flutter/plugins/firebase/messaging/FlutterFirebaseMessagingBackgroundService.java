@@ -164,43 +164,44 @@ public class FlutterFirebaseMessagingBackgroundService extends JobIntentService 
       }
 
     } else {
-      Intent intent;
-      link = bundle.getString("link");
-      date = Calendar.getInstance().getTimeInMillis();
-      notice = bundle.getString("Notice");
-      image = bundle.getString("image");
-      subject = bundle.getString("subject");
-      singleMessageId = bundle.getString("single_message_id");
-      executionId = Integer.parseInt(bundle.getString("execution_id"));
-      fcmResponseId = bundle.getString("fcm_response_id");
-      msgLabel = bundle.getString("msg_label");
 
-      Log.d(TAG, "handleNotificationOnBackgroundOnly: execution id  " + executionId);
-      Random randInt = new Random();
-      int randomInt = randInt.nextInt(100000);
-      NotificationManager mNotificationManager = null;
-      mNotificationManager = (NotificationManager)
-        context.getSystemService(Context.NOTIFICATION_SERVICE);
-      intent = new Intent(context, FirebaseCustomNotificationHandler.class);
-      intent.setAction(getAction(type));
-      geExtra(context, intent, type, link);
-      intent.putExtra(FlutterFirebaseMessagingMyWorldLinkConstants.NOTIFICATION_LINK, link);
-      intent.putExtra(FlutterFirebaseMessagingMyWorldLinkConstants.NOTIFICATION_DATE, date);
-      intent.putExtra(FlutterFirebaseMessagingMyWorldLinkConstants.NOTIFICATION_NOTICE, notice);
-      intent.putExtra(FlutterFirebaseMessagingMyWorldLinkConstants.NOTIFICATION_SUBJECT, subject);
-      intent.putExtra(FlutterFirebaseMessagingMyWorldLinkConstants.NOTIFICATION_TYPE, type);
-      intent.putExtra(FlutterFirebaseMessagingMyWorldLinkConstants.NOTIFICATION_IMAGE, image);
-      intent.putExtra(FlutterFirebaseMessagingMyWorldLinkConstants.NOTIFICATION_SINGLE_MESSAGE_ID, singleMessageId);
-      intent.putExtra(FlutterFirebaseMessagingMyWorldLinkConstants.NOTIFICATION_EXECUTION_ID, executionId);
-      intent.putExtra(FlutterFirebaseMessagingMyWorldLinkConstants.NOTIFICATION_FCM_RESPONSE_ID, fcmResponseId);
-      intent.putExtra(FlutterFirebaseMessagingMyWorldLinkConstants.NOTIFICATION_MSG_LABEL, msgLabel);
-      intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK | Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_NEW_TASK);
-      PendingIntent contentIntent = PendingIntent.getBroadcast(context, randomInt, intent, PendingIntent.FLAG_CANCEL_CURRENT);
-      PendingIntent deletePendingIntent = getDeletePendingIntent(context, fcmResponseId, subject, type, notice, link, date,
-        image, singleMessageId, executionId, msgLabel);
-      NotificationCompat.Builder mBuilder = new NotificationCompat.Builder(context, FlutterFirebaseMessagingMyWorldLinkConstants.CHANNEL_ID);
-      mBuilder.setContentIntent(contentIntent);
-      mBuilder.setDeleteIntent(deletePendingIntent);
+//      Intent intent;
+//      link = bundle.getString("link");
+//      date = Calendar.getInstance().getTimeInMillis();
+//      notice = bundle.getString("Notice");
+//      image = bundle.getString("image");
+//      subject = bundle.getString("subject");
+//      singleMessageId = bundle.getString("single_message_id");
+//      executionId = Integer.parseInt(bundle.getString("execution_id"));
+//      fcmResponseId = bundle.getString("fcm_response_id");
+//      msgLabel = bundle.getString("msg_label");
+//
+//      Log.d(TAG, "handleNotificationOnBackgroundOnly: execution id  " + executionId);
+//      Random randInt = new Random();
+//      int randomInt = randInt.nextInt(100000);
+//      NotificationManager mNotificationManager = null;
+//      mNotificationManager = (NotificationManager)
+//        context.getSystemService(Context.NOTIFICATION_SERVICE);
+//      intent = new Intent(context, FirebaseCustomNotificationHandler.class);
+//      intent.setAction(getAction(type));
+//      geExtra(context, intent, type, link);
+//      intent.putExtra(FlutterFirebaseMessagingMyWorldLinkConstants.NOTIFICATION_LINK, link);
+//      intent.putExtra(FlutterFirebaseMessagingMyWorldLinkConstants.NOTIFICATION_DATE, date);
+//      intent.putExtra(FlutterFirebaseMessagingMyWorldLinkConstants.NOTIFICATION_NOTICE, notice);
+//      intent.putExtra(FlutterFirebaseMessagingMyWorldLinkConstants.NOTIFICATION_SUBJECT, subject);
+//      intent.putExtra(FlutterFirebaseMessagingMyWorldLinkConstants.NOTIFICATION_TYPE, type);
+//      intent.putExtra(FlutterFirebaseMessagingMyWorldLinkConstants.NOTIFICATION_IMAGE, image);
+//      intent.putExtra(FlutterFirebaseMessagingMyWorldLinkConstants.NOTIFICATION_SINGLE_MESSAGE_ID, singleMessageId);
+//      intent.putExtra(FlutterFirebaseMessagingMyWorldLinkConstants.NOTIFICATION_EXECUTION_ID, executionId);
+//      intent.putExtra(FlutterFirebaseMessagingMyWorldLinkConstants.NOTIFICATION_FCM_RESPONSE_ID, fcmResponseId);
+//      intent.putExtra(FlutterFirebaseMessagingMyWorldLinkConstants.NOTIFICATION_MSG_LABEL, msgLabel);
+//      intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK | Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_NEW_TASK);
+//      PendingIntent contentIntent = PendingIntent.getBroadcast(context, randomInt, intent, PendingIntent.FLAG_CANCEL_CURRENT);
+//      PendingIntent deletePendingIntent = getDeletePendingIntent(context, fcmResponseId, subject, type, notice, link, date,
+//        image, singleMessageId, executionId, msgLabel);
+//      NotificationCompat.Builder mBuilder = new NotificationCompat.Builder(context, FlutterFirebaseMessagingMyWorldLinkConstants.CHANNEL_ID);
+//      mBuilder.setContentIntent(contentIntent);
+//      mBuilder.setDeleteIntent(deletePendingIntent);
 
 
     }
