@@ -152,58 +152,15 @@ public class FlutterFirebaseMessagingBackgroundService extends JobIntentService 
       } else {
         mBuilder.setSmallIcon(R.drawable.notification);
       }
-      if (image.isEmpty()) {
-        mBuilder.setDefaults(Notification.DEFAULT_SOUND);
-        if (mNotificationManager != null) {
-          mNotificationManager.notify(randomInt, mBuilder.build());
-        }
 
-      } else {
+      if (!image.isEmpty()) {
         getBitmapAsyncAndDoWork(image, context, mBuilder, mNotificationManager, randomInt);
-
       }
 
-    } else {
-
-//      Intent intent;
-//      link = bundle.getString("link");
-//      date = Calendar.getInstance().getTimeInMillis();
-//      notice = bundle.getString("Notice");
-//      image = bundle.getString("image");
-//      subject = bundle.getString("subject");
-//      singleMessageId = bundle.getString("single_message_id");
-//      executionId = Integer.parseInt(bundle.getString("execution_id"));
-//      fcmResponseId = bundle.getString("fcm_response_id");
-//      msgLabel = bundle.getString("msg_label");
-//
-//      Log.d(TAG, "handleNotificationOnBackgroundOnly: execution id  " + executionId);
-//      Random randInt = new Random();
-//      int randomInt = randInt.nextInt(100000);
-//      NotificationManager mNotificationManager = null;
-//      mNotificationManager = (NotificationManager)
-//        context.getSystemService(Context.NOTIFICATION_SERVICE);
-//      intent = new Intent(context, FirebaseCustomNotificationHandler.class);
-//      intent.setAction(getAction(type));
-//      geExtra(context, intent, type, link);
-//      intent.putExtra(FlutterFirebaseMessagingMyWorldLinkConstants.NOTIFICATION_LINK, link);
-//      intent.putExtra(FlutterFirebaseMessagingMyWorldLinkConstants.NOTIFICATION_DATE, date);
-//      intent.putExtra(FlutterFirebaseMessagingMyWorldLinkConstants.NOTIFICATION_NOTICE, notice);
-//      intent.putExtra(FlutterFirebaseMessagingMyWorldLinkConstants.NOTIFICATION_SUBJECT, subject);
-//      intent.putExtra(FlutterFirebaseMessagingMyWorldLinkConstants.NOTIFICATION_TYPE, type);
-//      intent.putExtra(FlutterFirebaseMessagingMyWorldLinkConstants.NOTIFICATION_IMAGE, image);
-//      intent.putExtra(FlutterFirebaseMessagingMyWorldLinkConstants.NOTIFICATION_SINGLE_MESSAGE_ID, singleMessageId);
-//      intent.putExtra(FlutterFirebaseMessagingMyWorldLinkConstants.NOTIFICATION_EXECUTION_ID, executionId);
-//      intent.putExtra(FlutterFirebaseMessagingMyWorldLinkConstants.NOTIFICATION_FCM_RESPONSE_ID, fcmResponseId);
-//      intent.putExtra(FlutterFirebaseMessagingMyWorldLinkConstants.NOTIFICATION_MSG_LABEL, msgLabel);
-//      intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK | Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_NEW_TASK);
-//      PendingIntent contentIntent = PendingIntent.getBroadcast(context, randomInt, intent, PendingIntent.FLAG_CANCEL_CURRENT);
-//      PendingIntent deletePendingIntent = getDeletePendingIntent(context, fcmResponseId, subject, type, notice, link, date,
-//        image, singleMessageId, executionId, msgLabel);
-//      NotificationCompat.Builder mBuilder = new NotificationCompat.Builder(context, FlutterFirebaseMessagingMyWorldLinkConstants.CHANNEL_ID);
-//      mBuilder.setContentIntent(contentIntent);
-//      mBuilder.setDeleteIntent(deletePendingIntent);
-
-
+      mBuilder.setDefaults(Notification.DEFAULT_SOUND);
+      if (mNotificationManager != null) {
+        mNotificationManager.notify(randomInt, mBuilder.build());
+      }
     }
   }
 
@@ -243,8 +200,6 @@ public class FlutterFirebaseMessagingBackgroundService extends JobIntentService 
         public void onResourceReady(@NonNull Bitmap resource, @Nullable com.bumptech.glide.request.transition.Transition<? super Bitmap> transition) {
           bitmap[0] = resource;
           builder.setStyle(new NotificationCompat.BigPictureStyle().bigPicture(bitmap[0]));
-          builder.setSound(RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION));
-          mNotificationManager.notify(randomInt, builder.build());
 
         }
 
