@@ -21,7 +21,7 @@ public class InsertNotificationDBHelper extends SQLiteOpenHelper {
 
   }
 
-  private static int DATABASE_VERSION = 2;
+  private static int DATABASE_VERSION = 3;
   private static String DATABASE_NAME = "wlink.db";
   String TABLE_NAME = "NotificationDb";
 
