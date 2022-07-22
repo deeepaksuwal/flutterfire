@@ -100,6 +100,12 @@ public class FlutterFirebaseMessagingBackgroundService extends JobIntentService 
       fcmResponseId = bundle.getString("fcm_response_id");
       msgLabel = bundle.getString("msg_label");
 
+      if (image == null) {
+        image = "";
+      }
+      if (link == null) {
+        link = "";
+      }
       Log.d(TAG, "handleNotificationOnBackgroundOnly: execution id  " + executionId);
       Random randInt = new Random();
       int randomInt = randInt.nextInt(100000);
@@ -137,9 +143,6 @@ public class FlutterFirebaseMessagingBackgroundService extends JobIntentService 
       NotificationCompat.Builder mBuilder = new NotificationCompat.Builder(context, FlutterFirebaseMessagingMyWorldLinkConstants.CHANNEL_ID);
       mBuilder.setContentTitle(subject);
       mBuilder.setContentText(notice);
-      if (image.isEmpty()) {
-        mBuilder.setStyle(new NotificationCompat.BigTextStyle().bigText(notice));
-      }
       mBuilder.setAutoCancel(true);
       mBuilder.setContentIntent(contentIntent);
       mBuilder.setChannelId(FlutterFirebaseMessagingMyWorldLinkConstants.CHANNEL_ID);
@@ -148,12 +151,13 @@ public class FlutterFirebaseMessagingBackgroundService extends JobIntentService 
         mBuilder.setSmallIcon(R.drawable.ic_notification_o);
         mBuilder.setColorized(true);
         mBuilder.setColor(context.getResources().getColor(R.color.colorPrimary));
-
       } else {
         mBuilder.setSmallIcon(R.drawable.notification);
       }
 
-      if (!image.isEmpty()) {
+      if (image.isEmpty()) {
+        mBuilder.setStyle(new NotificationCompat.BigTextStyle().bigText(notice));
+      } else {
         getBitmapAsyncAndDoWork(image, context, mBuilder, mNotificationManager, randomInt);
       }
 
