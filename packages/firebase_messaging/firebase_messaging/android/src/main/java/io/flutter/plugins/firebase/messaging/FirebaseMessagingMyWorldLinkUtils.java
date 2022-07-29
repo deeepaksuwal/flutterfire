@@ -27,12 +27,7 @@ public class FirebaseMessagingMyWorldLinkUtils {
     Log.e("PACKAGE URL VOLLEY ->", url);
     StringRequest request = new StringRequest(com.android.volley.Request.Method.PATCH, url, response -> {
       try {
-        if (response.statusCode == 200) {
-          Log.e("PACKAGE SUCCESS ->", url);
-        } else {
-          Log.e("PACKAGE error status code ->", response.statusCode);
-        }
-
+        Log.e("PACKAGE SUCCESS ->", url);
       } catch (Exception e) {
         Log.e("PACKAGE Exception ->", e.getLocalizedMessage());
       }
