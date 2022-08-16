@@ -20,6 +20,7 @@ public class FirebaseCustomNotificationHandler extends BroadcastReceiver {
   private int executionId;
   private String msgLabel = "";
   private String fcmResponseId = "";
+  private String diagnosticIdx = "";
   private Intent finalIntent;
   private static final String TAG = "FirebaseCustomNotificationHandler";
   String token = "";
@@ -42,6 +43,7 @@ public class FirebaseCustomNotificationHandler extends BroadcastReceiver {
       singleMessageId = _getSingleMessageId(intent);
       executionId = _getExecutionId(intent);
       fcmResponseId = String.valueOf(_getFCMResponseId(intent));
+      diagnosticIdx = _getDiagnosticIdx(intent);
       type = _getType(intent);
       msgLabel = _getMsgLabel(intent);
     }
@@ -83,9 +85,11 @@ public class FirebaseCustomNotificationHandler extends BroadcastReceiver {
         if (!link.startsWith("http://") && !link.startsWith("https://"))
           link = "http://" + link;
         intent = new Intent(Intent.ACTION_VIEW, Uri.parse(link));
-        intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_SINGLE_TOP | Intent.FLAG_ACTIVITY_NEW_TASK);
-        FirebaseMessagingMyWorldLinkUtils.sendNotificationReadStatus(context, "seen", msgLabel, username, String.valueOf(executionId), token);
-        context.startActivity(intent);
+        if (intent.resolveActivity(context.getPackageManager()) != null) {
+          intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_SINGLE_TOP | Intent.FLAG_ACTIVITY_NEW_TASK);
+          FirebaseMessagingMyWorldLinkUtils.sendNotificationReadStatus(context, "seen", msgLabel, username, String.valueOf(executionId), token);
+          context.startActivity(intent);
+        }
         break;
 
       default:
@@ -124,6 +128,15 @@ public class FirebaseCustomNotificationHandler extends BroadcastReceiver {
   private String _getNotice(Intent intent) {
     if (intent.getExtras().getString(FlutterFirebaseMessagingMyWorldLinkConstants.NOTIFICATION_NOTICE) != null) {
       return intent.getExtras().getString(FlutterFirebaseMessagingMyWorldLinkConstants.NOTIFICATION_NOTICE);
+    }
+    return "";
+  }
+
+  private String _getDiagnosticIdx(Intent intent) {
+    if (intent.getExtras().getString(FlutterFirebaseMessagingMyWorldLinkConstants.NOTIFICATION_DIAGNOSTIC_IDX) != null) {
+      Log.d(TAG, "_getDiagnosticIdx: " + intent.getExtras().getString(FlutterFirebaseMessagingMyWorldLinkConstants.NOTIFICATION_DIAGNOSTIC_IDX));
+
+      return intent.getExtras().getString(FlutterFirebaseMessagingMyWorldLinkConstants.NOTIFICATION_DIAGNOSTIC_IDX);
     }
     return "";
   }

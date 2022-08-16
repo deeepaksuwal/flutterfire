@@ -77,6 +77,7 @@ public class FlutterFirebaseMessagingBackgroundService extends JobIntentService 
     Bundle bundle = new Bundle();
     String subject = "";
     String image = "";
+    String diagnosticIdx = "";
     String singleMessageId = "";
     String fcmResponseId = "";
     int executionId = 0;
@@ -94,6 +95,7 @@ public class FlutterFirebaseMessagingBackgroundService extends JobIntentService 
       date = Calendar.getInstance().getTimeInMillis();
       notice = bundle.getString("Notice");
       image = bundle.getString("image");
+      diagnosticIdx = bundle.getString("diagnostic_idx");
       subject = bundle.getString("subject");
       singleMessageId = bundle.getString("single_message_id");
       executionId = Integer.parseInt(bundle.getString("execution_id"));
@@ -102,6 +104,9 @@ public class FlutterFirebaseMessagingBackgroundService extends JobIntentService 
 
       if (image == null) {
         image = "";
+      }
+      if (diagnosticIdx == null) {
+        diagnosticIdx = "";
       }
       if (link == null) {
         link = "";
@@ -121,6 +126,7 @@ public class FlutterFirebaseMessagingBackgroundService extends JobIntentService 
       intent.putExtra(FlutterFirebaseMessagingMyWorldLinkConstants.NOTIFICATION_SUBJECT, subject);
       intent.putExtra(FlutterFirebaseMessagingMyWorldLinkConstants.NOTIFICATION_TYPE, type);
       intent.putExtra(FlutterFirebaseMessagingMyWorldLinkConstants.NOTIFICATION_IMAGE, image);
+      intent.putExtra(FlutterFirebaseMessagingMyWorldLinkConstants.NOTIFICATION_DIAGNOSTIC_IDX, diagnosticIdx);
       intent.putExtra(FlutterFirebaseMessagingMyWorldLinkConstants.NOTIFICATION_SINGLE_MESSAGE_ID, singleMessageId);
       intent.putExtra(FlutterFirebaseMessagingMyWorldLinkConstants.NOTIFICATION_EXECUTION_ID, executionId);
       intent.putExtra(FlutterFirebaseMessagingMyWorldLinkConstants.NOTIFICATION_FCM_RESPONSE_ID, fcmResponseId);
@@ -128,7 +134,7 @@ public class FlutterFirebaseMessagingBackgroundService extends JobIntentService 
       intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK | Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_NEW_TASK);
       PendingIntent contentIntent = PendingIntent.getBroadcast(context, randomInt, intent, PendingIntent.FLAG_CANCEL_CURRENT);
       PendingIntent deletePendingIntent = getDeletePendingIntent(context, fcmResponseId, subject, type, notice, link, date,
-        image, singleMessageId, executionId, msgLabel);
+        image, singleMessageId, executionId, msgLabel, diagnosticIdx);
 
       int importance = 0;
       if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.N) {
@@ -169,7 +175,8 @@ public class FlutterFirebaseMessagingBackgroundService extends JobIntentService 
   }
 
   private static PendingIntent getDeletePendingIntent(Context context, String fcmResponseId, String subject, int type, String notice, String link, Long date,
-                                                      String image, String singleMessageId, int executionId, String msgLabel) {
+                                                      String image, String singleMessageId, int executionId, String msgLabel,
+                                                      String diagnosticIdx) {
     Intent deleteIntent = new Intent(context, FirebaseCustomNotificationHandler.class);
     Random randInt = new Random();
     int randomInt = randInt.nextInt(100000);
@@ -185,6 +192,7 @@ public class FlutterFirebaseMessagingBackgroundService extends JobIntentService 
     deleteIntent.putExtra(FlutterFirebaseMessagingMyWorldLinkConstants.NOTIFICATION_SINGLE_MESSAGE_ID, singleMessageId);
     deleteIntent.putExtra(FlutterFirebaseMessagingMyWorldLinkConstants.NOTIFICATION_EXECUTION_ID, executionId);
     deleteIntent.putExtra(FlutterFirebaseMessagingMyWorldLinkConstants.NOTIFICATION_MSG_LABEL, msgLabel);
+    deleteIntent.putExtra(FlutterFirebaseMessagingMyWorldLinkConstants.NOTIFICATION_DIAGNOSTIC_IDX, diagnosticIdx);
 
     Log.d(TAG, "getDeletePendingIntent: updated");
     return PendingIntent.getBroadcast(context, randomInt, deleteIntent, PendingIntent.FLAG_CANCEL_CURRENT);

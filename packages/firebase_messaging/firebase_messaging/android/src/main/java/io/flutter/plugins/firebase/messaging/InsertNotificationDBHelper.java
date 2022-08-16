@@ -17,7 +17,7 @@ import java.util.Date;
 
 public class InsertNotificationDBHelper extends SQLiteOpenHelper {
   public InsertNotificationDBHelper(@Nullable Context context) {
-    super(context, DATABASE_NAME, null, DATABASE_VERSION);
+    super(context.getApplicationContext(), DATABASE_NAME, null, DATABASE_VERSION);
 
   }
 
@@ -45,6 +45,7 @@ public class InsertNotificationDBHelper extends SQLiteOpenHelper {
   private static String USER_ACTION = "user_action";
   private static String USER_ACTION_DATE = "user_action_date";
   private static String USERNAME = "username";
+  private static String DIAGNOSTIC_IDX = "diagnostic_idx";
 
   @Override
   public void onCreate(SQLiteDatabase sqLiteDatabase) {
@@ -67,6 +68,7 @@ public class InsertNotificationDBHelper extends SQLiteOpenHelper {
     contentValues.put(EXECUTION_ID, remoteMessage.getData().get("execution_id"));
     contentValues.put(MSG_LABEL, remoteMessage.getData().get("msg_label"));
     contentValues.put(FCM_REPONSE_ID, remoteMessage.getData().get("fcm_response_id"));
+    contentValues.put(DIAGNOSTIC_IDX, remoteMessage.getData().get("diagnostic_idx"));
     contentValues.put(USERNAME, username);
 
     contentValues.put(ACCOUNT_STATUS_DISABLE,"");

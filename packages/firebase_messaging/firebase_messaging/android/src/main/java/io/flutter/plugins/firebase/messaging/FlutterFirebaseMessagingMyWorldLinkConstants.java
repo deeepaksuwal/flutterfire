@@ -12,6 +12,7 @@ public class FlutterFirebaseMessagingMyWorldLinkConstants {
   public static final String NOTIFICATION_FCM_RESPONSE_ID = "fcm_response_id";
   public static final String NOTIFICATION_USERNAME = "username";
   public static final String NOTIFICATION_DATE = "notification_date";
+  public static final String NOTIFICATION_DIAGNOSTIC_IDX = "diagnostic_idx";
 
   public static final String NOTIFICATION_DELETE = "notification_delete";
   public static final String NOTIFICATION_TYPE_1 = "1";
