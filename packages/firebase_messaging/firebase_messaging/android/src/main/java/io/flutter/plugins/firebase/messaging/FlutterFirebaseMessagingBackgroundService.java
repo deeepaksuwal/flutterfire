@@ -123,13 +123,19 @@ public class FlutterFirebaseMessagingBackgroundService extends JobIntentService 
         context.getSystemService(Context.NOTIFICATION_SERVICE);
       PendingIntent contentIntent , deletePendingIntent = null;
       if (android.os.Build.VERSION.SDK_INT >= 31) {
+        if (getAction(type).equals(FlutterFirebaseMessagingMyWorldLinkConstants.NOTIFICATION_DELETE)) {
+          intent = new Intent(context, FirebaseCustomNotificationHandler.class);
+          deleteIntent = new Intent(context, FirebaseCustomNotificationHandler.class);
+          intent.setAction(getAction(type));
+          contentIntent = PendingIntent.getBroadcast(context, randomInt, intent, PendingIntent.FLAG_IMMUTABLE);
+        } else {
           if (getAction(type).equals(FlutterFirebaseMessagingMyWorldLinkConstants.NOTIFICATION_TYPE_1) ) {
             intent = new Intent(Intent.ACTION_VIEW);
             deleteIntent = new Intent(Intent.ACTION_VIEW);
 
-          intent.setData( Uri.parse("market://details?id=" + context.getPackageName()));
+            intent.setData( Uri.parse("market://details?id=" + context.getPackageName()));
             intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_SINGLE_TOP | Intent.FLAG_ACTIVITY_NEW_TASK);
-                    FirebaseMessagingMyWorldLinkUtils.sendNotificationReadStatus(context, "seen", msgLabel, username, String.valueOf(executionId), token);
+//            FirebaseMessagingMyWorldLinkUtils.sendNotificationReadStatus(context, "seen", msgLabel, username, String.valueOf(executionId), token);
           } else if (getAction(type).equals(FlutterFirebaseMessagingMyWorldLinkConstants.NOTIFICATION_TYPE_2)) {
             intent = new Intent(Intent.ACTION_VIEW);
             deleteIntent = new Intent(Intent.ACTION_VIEW);
@@ -138,14 +144,10 @@ public class FlutterFirebaseMessagingBackgroundService extends JobIntentService 
             intent.setData(Uri.parse(link));
             if (intent.resolveActivity(context.getPackageManager()) != null) {
               intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_SINGLE_TOP | Intent.FLAG_ACTIVITY_NEW_TASK);
-              FirebaseMessagingMyWorldLinkUtils.sendNotificationReadStatus(context, "seen", msgLabel, username, String.valueOf(executionId), token);
+//              FirebaseMessagingMyWorldLinkUtils.sendNotificationReadStatus(context, "seen", msgLabel, username, String.valueOf(executionId), token);
               context.startActivity(intent);
 
             }
-          } else if (getAction(type).equals(FlutterFirebaseMessagingMyWorldLinkConstants.NOTIFICATION_DELETE)) {
-            intent = new Intent(context, FirebaseCustomNotificationHandler.class);
-            deleteIntent = new Intent(context, FirebaseCustomNotificationHandler.class);
-            FirebaseMessagingMyWorldLinkUtils.sendNotificationReadStatus(context, "dismiss", msgLabel, username, String.valueOf(executionId), token);
           } else {
             intent = new Intent(context, FirebaseCustomNotificationHandler.class);
             deleteIntent = new Intent(context, FirebaseCustomNotificationHandler.class);
@@ -153,6 +155,7 @@ public class FlutterFirebaseMessagingBackgroundService extends JobIntentService 
 
           }
         contentIntent = PendingIntent.getActivity(context, randomInt, intent, PendingIntent.FLAG_IMMUTABLE);
+        }
         deletePendingIntent = getDeletePendingIntent(context, deleteIntent, fcmResponseId, subject, type, notice, link, date,
           image, singleMessageId, executionId, msgLabel, diagnosticIdx);
 
@@ -243,8 +246,12 @@ public class FlutterFirebaseMessagingBackgroundService extends JobIntentService 
         deleteIntent.putExtra(FlutterFirebaseMessagingMyWorldLinkConstants.NOTIFICATION_MSG_LABEL, msgLabel);
         deleteIntent.putExtra(FlutterFirebaseMessagingMyWorldLinkConstants.NOTIFICATION_DIAGNOSTIC_IDX, diagnosticIdx);
 
+        if (getAction(type).equals(FlutterFirebaseMessagingMyWorldLinkConstants.NOTIFICATION_DELETE)) {
+          return PendingIntent.getBroadcast(context, randomInt, deleteIntent, PendingIntent.FLAG_IMMUTABLE);
+        } else {
         Log.d(TAG, "getDeletePendingIntent: updated");
         return PendingIntent.getActivity(context, randomInt, deleteIntent, PendingIntent.FLAG_IMMUTABLE);
+        }
       }
     } else {
 
