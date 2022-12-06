@@ -1,0 +1,187 @@
+package io.flutter.plugins.firebase.messaging;
+
+import android.app.Activity;
+import android.content.Context;
+import android.content.Intent;
+import android.content.SharedPreferences;
+import android.net.Uri;
+import android.os.Bundle;
+import android.util.Log;
+
+import androidx.annotation.Nullable;
+
+import java.util.Date;
+
+public class NotificationRedirectionHandler extends Activity {
+  private String extras;
+  private String link = "";
+  private String notice = "";
+  private String subject = "";
+  private String image = "";
+  private String singleMessageId = "";
+  private int executionId;
+  private String msgLabel = "";
+  private String fcmResponseId = "";
+  private String diagnosticIdx = "";
+  private Intent finalIntent;
+  private static final String TAG = "FirebaseCustomNotificationHandler";
+  String token = "";
+  private long date;
+  private Date mDate;
+  private int type = 0;
+  String username = "";
+  Intent intent;
+
+  @Override
+  protected void onCreate(@Nullable Bundle savedInstanceState) {
+    if (getIntent() != null) {
+
+    intent = getIntent();
+    Log.e("Test", "TEst classssss");
+      if (intent.getExtras() != null) {
+        notice = _getNotice(intent);
+        link = _getLink(intent);
+        subject = _getSubject(intent);
+        mDate = _getDate(intent);
+        image = _getImage(intent);
+        singleMessageId = _getSingleMessageId(intent);
+        executionId = _getExecutionId(intent);
+        fcmResponseId = String.valueOf(_getFCMResponseId(intent));
+        diagnosticIdx = _getDiagnosticIdx(intent);
+        type = _getType(intent);
+        msgLabel = _getMsgLabel(intent);
+      }
+      Log.d(TAG, "handleNotificationType onReceive: exec " + executionId);
+      Log.d(TAG, "handleNotificationType onReceive: fcmresponse id  " + fcmResponseId);
+
+      Log.d(TAG, "handleNotificationType onReceive: HERE" + intent.getAction());
+
+      SharedPreferences preferences = getSharedPreferences("FlutterSharedPreferences", Context.MODE_PRIVATE);
+      token = preferences.getString("flutter.PREFS_USER_TOKEN", "");
+      username = preferences.getString("flutter.PREFS_USER_DEFAULT", "");
+      preferences.edit().putBoolean("flutter.PREFS_USER_READ_STATUS_NOTIFICATION", true).apply();
+    handleNotificationType(intent);
+    }
+    super.onCreate(savedInstanceState);
+
+  }
+
+  private void handleNotificationType(Intent intent) {
+    switch (intent.getAction()) {
+      case FlutterFirebaseMessagingMyWorldLinkConstants.NOTIFICATION_DELETE:
+        Log.d(TAG, "handleNotificationType: delete");
+        FirebaseMessagingMyWorldLinkUtils.sendNotificationReadStatus(this, "dismiss", msgLabel, username, String.valueOf(executionId), token);
+        break;
+
+      case FlutterFirebaseMessagingMyWorldLinkConstants.NOTIFICATION_TYPE_1:
+        Log.d(TAG, "handleNotificationType: notification 1");
+        String appPackageName = intent.getExtras().getString(FlutterFirebaseMessagingMyWorldLinkConstants.NOTIFICATION_TYPE_1_DATA);
+        try {
+          finalIntent = new Intent(Intent.ACTION_VIEW, Uri.parse("market://details?id=" + appPackageName));
+        } catch (android.content.ActivityNotFoundException anfe) {
+          finalIntent = new Intent(Intent.ACTION_VIEW, Uri.parse("https://play.google.com/store/apps/details?id=" + appPackageName));
+        }
+        finalIntent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_SINGLE_TOP | Intent.FLAG_ACTIVITY_NEW_TASK);
+        startActivity(finalIntent);
+        FirebaseMessagingMyWorldLinkUtils.sendNotificationReadStatus(this, "seen", msgLabel, username, String.valueOf(executionId), token);
+        finish();
+        break;
+
+      case FlutterFirebaseMessagingMyWorldLinkConstants.NOTIFICATION_TYPE_2:
+        Log.d(TAG, "handleNotificationType: notification 2");
+        link = intent.getExtras().getString(FlutterFirebaseMessagingMyWorldLinkConstants.NOTIFICATION_LINK);
+        if (!link.startsWith("http://") && !link.startsWith("https://"))
+          link = "http://" + link;
+        intent = new Intent(Intent.ACTION_VIEW, Uri.parse(link));
+        if (intent.resolveActivity(getPackageManager()) != null) {
+          intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_SINGLE_TOP | Intent.FLAG_ACTIVITY_NEW_TASK);
+          FirebaseMessagingMyWorldLinkUtils.sendNotificationReadStatus(this, "seen", msgLabel, username, String.valueOf(executionId), token);
+          startActivity(intent);
+          finish();
+        }
+        break;
+
+      default:
+        FirebaseMessagingMyWorldLinkUtils.sendNotificationReadStatus(this, "seen", msgLabel, username, String.valueOf(executionId), token);
+        break;
+
+    }
+  }
+
+  private int _getType(Intent intent) {
+    return intent.getExtras().getInt(FlutterFirebaseMessagingMyWorldLinkConstants.NOTIFICATION_TYPE);
+  }
+
+  private Date _getDate(Intent intent) {
+    if (intent.getExtras().getLong(FlutterFirebaseMessagingMyWorldLinkConstants.NOTIFICATION_DATE) < 0) {
+      date = intent.getExtras().getLong(FlutterFirebaseMessagingMyWorldLinkConstants.NOTIFICATION_LINK);
+      return new Date(date);
+    }
+    return new Date();
+  }
+
+  private String _getSubject(Intent intent) {
+    if (intent.getExtras().getString(FlutterFirebaseMessagingMyWorldLinkConstants.NOTIFICATION_SUBJECT) != null) {
+      return intent.getExtras().getString(FlutterFirebaseMessagingMyWorldLinkConstants.NOTIFICATION_SUBJECT);
+    }
+    return "";
+  }
+
+  private String _getLink(Intent intent) {
+    if (intent.getExtras().getString(FlutterFirebaseMessagingMyWorldLinkConstants.NOTIFICATION_LINK) != null) {
+      return intent.getExtras().getString(FlutterFirebaseMessagingMyWorldLinkConstants.NOTIFICATION_LINK);
+    }
+    return "";
+  }
+
+  private String _getNotice(Intent intent) {
+    if (intent.getExtras().getString(FlutterFirebaseMessagingMyWorldLinkConstants.NOTIFICATION_NOTICE) != null) {
+      return intent.getExtras().getString(FlutterFirebaseMessagingMyWorldLinkConstants.NOTIFICATION_NOTICE);
+    }
+    return "";
+  }
+
+  private String _getDiagnosticIdx(Intent intent) {
+    if (intent.getExtras().getString(FlutterFirebaseMessagingMyWorldLinkConstants.NOTIFICATION_DIAGNOSTIC_IDX) != null) {
+      Log.d(TAG, "_getDiagnosticIdx: " + intent.getExtras().getString(FlutterFirebaseMessagingMyWorldLinkConstants.NOTIFICATION_DIAGNOSTIC_IDX));
+
+      return intent.getExtras().getString(FlutterFirebaseMessagingMyWorldLinkConstants.NOTIFICATION_DIAGNOSTIC_IDX);
+    }
+    return "";
+  }
+
+  private String _getImage(Intent intent) {
+    if (intent.getExtras().getString(FlutterFirebaseMessagingMyWorldLinkConstants.NOTIFICATION_IMAGE) != null) {
+      return intent.getExtras().getString(FlutterFirebaseMessagingMyWorldLinkConstants.NOTIFICATION_IMAGE, "");
+    }
+    return "";
+  }
+
+  private String _getSingleMessageId(Intent intent) {
+    if (intent.getExtras().getString(FlutterFirebaseMessagingMyWorldLinkConstants.NOTIFICATION_SINGLE_MESSAGE_ID) != null) {
+      return intent.getExtras().getString(FlutterFirebaseMessagingMyWorldLinkConstants.NOTIFICATION_SINGLE_MESSAGE_ID, "");
+    }
+    return "";
+  }
+
+  private String _getFCMResponseId(Intent intent) {
+    if (intent.getExtras().getString(FlutterFirebaseMessagingMyWorldLinkConstants.NOTIFICATION_FCM_RESPONSE_ID) != null) {
+      Log.d(TAG, "_getFCMResponseId: " + intent.getExtras().getString(FlutterFirebaseMessagingMyWorldLinkConstants.NOTIFICATION_FCM_RESPONSE_ID));
+
+      return intent.getExtras().getString(FlutterFirebaseMessagingMyWorldLinkConstants.NOTIFICATION_FCM_RESPONSE_ID, "");
+    }
+    return "";
+  }
+
+  private int _getExecutionId(Intent intent) {
+    Log.d(TAG, "_getExecutionId: " + intent.getExtras().getInt(FlutterFirebaseMessagingMyWorldLinkConstants.NOTIFICATION_EXECUTION_ID));
+    return intent.getExtras().getInt(FlutterFirebaseMessagingMyWorldLinkConstants.NOTIFICATION_EXECUTION_ID);
+  }
+
+  private String _getMsgLabel(Intent intent) {
+    if (intent.getExtras().getString(FlutterFirebaseMessagingMyWorldLinkConstants.NOTIFICATION_MSG_LABEL) != null) {
+      return intent.getExtras().getString(FlutterFirebaseMessagingMyWorldLinkConstants.NOTIFICATION_MSG_LABEL, "");
+    }
+    return "";
+  }
+}
