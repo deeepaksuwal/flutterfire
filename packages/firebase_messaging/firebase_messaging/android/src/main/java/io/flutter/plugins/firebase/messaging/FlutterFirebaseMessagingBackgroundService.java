@@ -184,7 +184,7 @@ public class FlutterFirebaseMessagingBackgroundService extends JobIntentService 
           contentIntent = PendingIntent.getActivity(context, randomInt, intent, PendingIntent.FLAG_IMMUTABLE);
         }
         deletePendingIntent = getDeletePendingIntent(context, deleteIntent, fcmResponseId, subject, type, notice, link, date,
-          image, singleMessageId, executionId, msgLabel, diagnosticIdx);
+          image, singleMessageId, executionId, msgLabel, diagnosticIdx,macAddress,latitude,longitude);
 
       } else {
         intent = new Intent(context, FirebaseCustomNotificationHandler.class);
