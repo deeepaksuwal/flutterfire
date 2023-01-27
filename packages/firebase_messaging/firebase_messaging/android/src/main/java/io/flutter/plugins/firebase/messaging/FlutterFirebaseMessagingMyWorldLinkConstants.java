@@ -13,6 +13,9 @@ public class FlutterFirebaseMessagingMyWorldLinkConstants {
   public static final String NOTIFICATION_USERNAME = "username";
   public static final String NOTIFICATION_DATE = "notification_date";
   public static final String NOTIFICATION_DIAGNOSTIC_IDX = "diagnostic_idx";
+  public static final String NOTIFICATION_MAC_ADDRESS = "mac_address";
+  public static final String NOTIFICATION_LATITUDE = "latitude";
+  public static final String NOTIFICATION_LONGITUDE = "longitude";
 
   public static final String NOTIFICATION_DELETE = "notification_delete";
   public static final String NOTIFICATION_TYPE_1 = "1";

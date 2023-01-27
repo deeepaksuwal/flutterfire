@@ -21,6 +21,9 @@ public class FirebaseCustomNotificationHandler extends BroadcastReceiver {
   private String msgLabel = "";
   private String fcmResponseId = "";
   private String diagnosticIdx = "";
+  private String macAddress = "";
+  private double latitude = 0.0;
+  private double longitude = 0.0;
   private Intent finalIntent;
   private static final String TAG = "FirebaseCustomNotificationHandler";
   String token = "";
@@ -44,6 +47,9 @@ public class FirebaseCustomNotificationHandler extends BroadcastReceiver {
       executionId = _getExecutionId(intent);
       fcmResponseId = String.valueOf(_getFCMResponseId(intent));
       diagnosticIdx = _getDiagnosticIdx(intent);
+      macAddress = _getMacAddress(intent);
+      latitude = _getLatitude(intent);
+      longitude = _getLongitude(intent);
       type = _getType(intent);
       msgLabel = _getMsgLabel(intent);
     }
@@ -139,6 +145,33 @@ public class FirebaseCustomNotificationHandler extends BroadcastReceiver {
       return intent.getExtras().getString(FlutterFirebaseMessagingMyWorldLinkConstants.NOTIFICATION_DIAGNOSTIC_IDX);
     }
     return "";
+  }
+
+  private String _getMacAddress(Intent intent) {
+    if (intent.getExtras().getString(FlutterFirebaseMessagingMyWorldLinkConstants.NOTIFICATION_MAC_ADDRESS) != null) {
+      Log.d(TAG, "_getMacAddress: " + intent.getExtras().getString(FlutterFirebaseMessagingMyWorldLinkConstants.NOTIFICATION_MAC_ADDRESS));
+
+      return intent.getExtras().getString(FlutterFirebaseMessagingMyWorldLinkConstants.NOTIFICATION_MAC_ADDRESS);
+    }
+    return "";
+  }
+
+  private double _getLatitude(Intent intent) {
+    if (intent.getExtras().getDouble(FlutterFirebaseMessagingMyWorldLinkConstants.NOTIFICATION_LATITUDE) < 0.0) {
+      Log.d(TAG, "_getLatitude: " + intent.getExtras().getDouble(FlutterFirebaseMessagingMyWorldLinkConstants.NOTIFICATION_LATITUDE));
+
+      return intent.getExtras().getDouble(FlutterFirebaseMessagingMyWorldLinkConstants.NOTIFICATION_LATITUDE);
+    }
+    return 0.0;
+  }
+
+  private double _getLongitude(Intent intent) {
+    if (intent.getExtras().getDouble(FlutterFirebaseMessagingMyWorldLinkConstants.NOTIFICATION_LONGITUDE) < 0.0) {
+      Log.d(TAG, "_getLongitude: " + intent.getExtras().getDouble(FlutterFirebaseMessagingMyWorldLinkConstants.NOTIFICATION_LONGITUDE));
+
+      return intent.getExtras().getDouble(FlutterFirebaseMessagingMyWorldLinkConstants.NOTIFICATION_LONGITUDE);
+    }
+    return 0.0;
   }
 
   private String _getImage(Intent intent) {

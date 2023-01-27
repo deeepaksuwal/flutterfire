@@ -46,6 +46,9 @@ public class InsertNotificationDBHelper extends SQLiteOpenHelper {
   private static String USER_ACTION_DATE = "user_action_date";
   private static String USERNAME = "username";
   private static String DIAGNOSTIC_IDX = "diagnostic_idx";
+  private static String MAC_ADDRESS = "mac_address";
+  private static String LATITUDE = "latitude";
+  private static String LONGITUDE = "longitude";
 
   @Override
   public void onCreate(SQLiteDatabase sqLiteDatabase) {
@@ -63,15 +66,18 @@ public class InsertNotificationDBHelper extends SQLiteOpenHelper {
     contentValues.put(MESSAGE, remoteMessage.getData().get("Notice"));
     contentValues.put(TYPE, remoteMessage.getData().get("type"));
     contentValues.put(LINK, remoteMessage.getData().get("link"));
-    contentValues.put(DATE,getFormattedDate(new Date()));
+    contentValues.put(DATE, getFormattedDate(new Date()));
     contentValues.put(IMAGE_DISPLAY, remoteMessage.getData().get("image"));
     contentValues.put(EXECUTION_ID, remoteMessage.getData().get("execution_id"));
     contentValues.put(MSG_LABEL, remoteMessage.getData().get("msg_label"));
     contentValues.put(FCM_REPONSE_ID, remoteMessage.getData().get("fcm_response_id"));
     contentValues.put(DIAGNOSTIC_IDX, remoteMessage.getData().get("diagnostic_idx"));
+    contentValues.put(MAC_ADDRESS, remoteMessage.getData().get("mac_address"));
+    contentValues.put(LATITUDE, remoteMessage.getData().get("latitude"));
+    contentValues.put(LONGITUDE, remoteMessage.getData().get("longitude"));
     contentValues.put(USERNAME, username);
 
-    contentValues.put(ACCOUNT_STATUS_DISABLE,"");
+    contentValues.put(ACCOUNT_STATUS_DISABLE, "");
     contentValues.put(GRACE_STATUS, "");
     contentValues.put(OPERATOR, "");
     contentValues.put(PLAN_CATEGORY_ID, "");
@@ -84,6 +90,7 @@ public class InsertNotificationDBHelper extends SQLiteOpenHelper {
     db.insert(TABLE_NAME, null, contentValues);
     db.close();
   }
+
   public static String getFormattedDate(Date date) {
     SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
 
