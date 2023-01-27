@@ -250,7 +250,8 @@ public class FlutterFirebaseMessagingBackgroundService extends JobIntentService 
   }
 
 
-  private static PendingIntent getDeletePendingIntent(Context context, Intent deleteIntent, String fcmResponseId, String subject, int type, String notice, String link, Long date,
+  private static PendingIntent getDeletePendingIntent(Context context, Intent deleteIntent, String fcmResponseId, String subject,
+                                                      int type, String notice, String link, Long date,
                                                       String image, String singleMessageId, int executionId, String msgLabel,
                                                       String diagnosticIdx, String macAddress, double latitude, double longitude) {
 
