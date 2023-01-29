@@ -103,8 +103,8 @@ public class FlutterFirebaseMessagingBackgroundService extends JobIntentService 
       image = bundle.getString("image");
       diagnosticIdx = bundle.getString("diagnostic_idx");
       macAddress = bundle.getString("mac_address");
-      latitude = bundle.getDouble("latitude");
-      longitude = bundle.getDouble("longitude");
+      latitude = Double.parseDouble(bundle.getString("latitude"));
+      longitude = Double.parseDouble(bundle.getString("longitude"));
       subject = bundle.getString("subject");
       singleMessageId = bundle.getString("single_message_id");
       executionId = Integer.parseInt(bundle.getString("execution_id"));
