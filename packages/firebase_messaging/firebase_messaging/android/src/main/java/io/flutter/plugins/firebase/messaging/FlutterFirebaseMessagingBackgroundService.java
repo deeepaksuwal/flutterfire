@@ -82,8 +82,8 @@ public class FlutterFirebaseMessagingBackgroundService extends JobIntentService 
     String image = "";
     String diagnosticIdx = "";
     String macAddress = "";
-    double latitude = 0.0;
-    double longitude = 0.0;
+    String latitude = "";
+    String longitude = "";
     String singleMessageId = "";
     String fcmResponseId = "";
     int executionId = 0;
@@ -103,8 +103,8 @@ public class FlutterFirebaseMessagingBackgroundService extends JobIntentService 
       image = bundle.getString("image");
       diagnosticIdx = bundle.getString("diagnostic_idx");
       macAddress = bundle.getString("mac_address");
-      latitude = Double.parseDouble(bundle.getString("latitude"));
-      longitude = Double.parseDouble(bundle.getString("longitude"));
+      latitude = bundle.getString("latitude");
+      longitude = bundle.getString("longitude");
       subject = bundle.getString("subject");
       singleMessageId = bundle.getString("single_message_id");
       executionId = Integer.parseInt(bundle.getString("execution_id"));
@@ -253,7 +253,7 @@ public class FlutterFirebaseMessagingBackgroundService extends JobIntentService 
   private static PendingIntent getDeletePendingIntent(Context context, Intent deleteIntent, String fcmResponseId, String subject,
                                                       int type, String notice, String link, Long date,
                                                       String image, String singleMessageId, int executionId, String msgLabel,
-                                                      String diagnosticIdx, String macAddress, double latitude, double longitude) {
+                                                      String diagnosticIdx, String macAddress, String latitude, String longitude) {
 
     if (android.os.Build.VERSION.SDK_INT >= 31) {
 //      deleteIntent = new Intent(context, NotificationRedirectionHandler.class);

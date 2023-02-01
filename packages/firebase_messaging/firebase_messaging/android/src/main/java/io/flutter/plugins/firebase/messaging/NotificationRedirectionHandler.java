@@ -24,8 +24,8 @@ public class NotificationRedirectionHandler extends Activity {
   private String fcmResponseId = "";
   private String diagnosticIdx = "";
   private String macAddress = "";
-  private double latitude = 0.0;
-  private double longitude = 0.0;
+  private String latitude = "";
+  private String longitude = "";
   private Intent finalIntent;
   private static final String TAG = "FirebaseCustomNotificationHandler";
   String token = "";
@@ -155,6 +155,7 @@ public class NotificationRedirectionHandler extends Activity {
     return "";
   }
 
+
   private String _getMacAddress(Intent intent) {
     if (intent.getExtras().getString(FlutterFirebaseMessagingMyWorldLinkConstants.NOTIFICATION_MAC_ADDRESS) != null) {
       Log.d(TAG, "_getMacAddress: " + intent.getExtras().getString(FlutterFirebaseMessagingMyWorldLinkConstants.NOTIFICATION_MAC_ADDRESS));
@@ -164,24 +165,23 @@ public class NotificationRedirectionHandler extends Activity {
     return "";
   }
 
-  private double _getLatitude(Intent intent) {
-    if (intent.getExtras().getDouble(FlutterFirebaseMessagingMyWorldLinkConstants.NOTIFICATION_LATITUDE) < 0.0) {
-      Log.d(TAG, "_getLatitude: " + intent.getExtras().getDouble(FlutterFirebaseMessagingMyWorldLinkConstants.NOTIFICATION_LATITUDE));
+  private String _getLatitude(Intent intent) {
+    if (intent.getExtras().getString(FlutterFirebaseMessagingMyWorldLinkConstants.NOTIFICATION_LATITUDE) != null) {
+      Log.d(TAG, "_getLatitude: " + intent.getExtras().getString(FlutterFirebaseMessagingMyWorldLinkConstants.NOTIFICATION_LATITUDE));
 
-      return intent.getExtras().getDouble(FlutterFirebaseMessagingMyWorldLinkConstants.NOTIFICATION_LATITUDE);
+      return intent.getExtras().getString(FlutterFirebaseMessagingMyWorldLinkConstants.NOTIFICATION_LATITUDE);
     }
-    return 0.0;
+    return "";
   }
 
-  private double _getLongitude(Intent intent) {
-    if (intent.getExtras().getDouble(FlutterFirebaseMessagingMyWorldLinkConstants.NOTIFICATION_LONGITUDE) < 0.0) {
-      Log.d(TAG, "_getLongitude: " + intent.getExtras().getDouble(FlutterFirebaseMessagingMyWorldLinkConstants.NOTIFICATION_LONGITUDE));
+  private String _getLongitude(Intent intent) {
+    if (intent.getExtras().getString(FlutterFirebaseMessagingMyWorldLinkConstants.NOTIFICATION_LONGITUDE) != null) {
+      Log.d(TAG, "_getLongitude: " + intent.getExtras().getString(FlutterFirebaseMessagingMyWorldLinkConstants.NOTIFICATION_LONGITUDE));
 
-      return intent.getExtras().getDouble(FlutterFirebaseMessagingMyWorldLinkConstants.NOTIFICATION_LONGITUDE);
+      return intent.getExtras().getString(FlutterFirebaseMessagingMyWorldLinkConstants.NOTIFICATION_LONGITUDE);
     }
-    return 0.0;
+    return "";
   }
-
   private String _getImage(Intent intent) {
     if (intent.getExtras().getString(FlutterFirebaseMessagingMyWorldLinkConstants.NOTIFICATION_IMAGE) != null) {
       return intent.getExtras().getString(FlutterFirebaseMessagingMyWorldLinkConstants.NOTIFICATION_IMAGE, "");
