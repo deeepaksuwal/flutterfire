@@ -24,6 +24,8 @@ public class FirebaseMessagingMyWorldLinkUtils {
                                                 final String messageType, final String username, final String executionId, final String token) {
     RequestQueue requestQueue = Volley.newRequestQueue(context);
     String url = "https://custmobileapp.worldlink.com.np/app/v2/notification/" + username + "/action/" + executionId;
+    InsertNotificationDBHelper dbHelper = new InsertNotificationDBHelper(context);
+
     Log.e("PACKAGE URL VOLLEY ->", url);
     StringRequest request = new StringRequest(com.android.volley.Request.Method.PATCH, url, response -> {
       try {
@@ -42,6 +44,9 @@ public class FirebaseMessagingMyWorldLinkUtils {
         hashMap.put("user_action", userAction);
         hashMap.put("message_type", messageType);
 //                hashMap.put("token",HelperMethods.getKeyFromPref(context));
+
+        dbHelper.setNotificationToRead(username,executionId);
+
         return hashMap;
       }
 
