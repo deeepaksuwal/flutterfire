@@ -100,14 +100,24 @@ public class InsertNotificationDBHelper extends SQLiteOpenHelper {
     return formatter.format(date);
   }
 
-  void setNotificationToRead(String username, int executionId) {
+  void setNotificationToRead(String username, String executionId) {
     try {
       SQLiteDatabase db = this.getWritableDatabase();
       ContentValues values = new ContentValues();
 
       values.put(USER_ACTION, "1");
-      values.put(EXECUTION_ID, executionId);
-      db.update(TABLE_NAME, values, "username=?", new String[]{username});
+
+      String whereClause = "username = ? AND execution_id = ?";
+      String[] whereArgs = {username, executionId};
+
+// Update the row
+      int rowsUpdated = db.update(TABLE_NAME, values, whereClause, whereArgs);
+      if (rowsUpdated > 0) {
+        Log.d(TAG, "rows updated here " + executionId);
+      } else {
+        Log.d(TAG, "rows updated here  failed casue not found" + executionId);
+      }
+
       db.close();
     } catch (Exception e) {
       Log.d(TAG, "setNotificationToRead Exception caught " + e);

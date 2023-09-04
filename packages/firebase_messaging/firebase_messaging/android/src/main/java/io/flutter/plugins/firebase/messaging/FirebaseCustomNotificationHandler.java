@@ -87,7 +87,7 @@ public class FirebaseCustomNotificationHandler extends BroadcastReceiver {
         finalIntent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_SINGLE_TOP | Intent.FLAG_ACTIVITY_NEW_TASK);
         context.startActivity(finalIntent);
         FirebaseMessagingMyWorldLinkUtils.sendNotificationReadStatus(context, "seen", msgLabel, username, String.valueOf(executionId), token);
-        dbHelper.setNotificationToRead(username, executionId);
+        dbHelper.setNotificationToRead(username, String.valueOf(executionId));
         break;
 
       case FlutterFirebaseMessagingMyWorldLinkConstants.NOTIFICATION_TYPE_2:
@@ -99,14 +99,16 @@ public class FirebaseCustomNotificationHandler extends BroadcastReceiver {
         if (intent.resolveActivity(context.getPackageManager()) != null) {
           intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_SINGLE_TOP | Intent.FLAG_ACTIVITY_NEW_TASK);
           FirebaseMessagingMyWorldLinkUtils.sendNotificationReadStatus(context, "seen", msgLabel, username, String.valueOf(executionId), token);
-          dbHelper.setNotificationToRead(username, executionId);
+          dbHelper.setNotificationToRead(username, String.valueOf(executionId));
           context.startActivity(intent);
         }
         break;
 
       default:
+        Log.d(TAG, "handleNotificationType: notification default");
+
         FirebaseMessagingMyWorldLinkUtils.sendNotificationReadStatus(context, "seen", msgLabel, username, String.valueOf(executionId), token);
-        dbHelper.setNotificationToRead(username, executionId);
+        dbHelper.setNotificationToRead(username, String.valueOf(executionId));
         break;
 
     }
