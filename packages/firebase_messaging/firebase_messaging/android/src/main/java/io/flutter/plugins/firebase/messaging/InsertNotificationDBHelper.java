@@ -6,6 +6,7 @@ import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 import android.media.MediaSyncEvent;
 import android.os.Bundle;
+import android.util.Log;
 
 import androidx.annotation.Nullable;
 
@@ -16,6 +17,8 @@ import java.util.Map;
 import java.util.Date;
 
 public class InsertNotificationDBHelper extends SQLiteOpenHelper {
+  private static final String TAG = "InsertBHelper";
+
   public InsertNotificationDBHelper(@Nullable Context context) {
     super(context.getApplicationContext(), DATABASE_NAME, null, DATABASE_VERSION);
 
@@ -97,4 +100,17 @@ public class InsertNotificationDBHelper extends SQLiteOpenHelper {
     return formatter.format(date);
   }
 
+  void setNotificationToRead(String username, int executionId) {
+    try {
+      SQLiteDatabase db = this.getWritableDatabase();
+      ContentValues values = new ContentValues();
+
+      values.put(USER_ACTION, "1");
+      values.put(EXECUTION_ID, executionId);
+      db.update(TABLE_NAME, values, "username=?", new String[]{username});
+      db.close();
+    } catch (Exception e) {
+      Log.d(TAG, "setNotificationToRead Exception caught " + e);
+    }
+  }
 }

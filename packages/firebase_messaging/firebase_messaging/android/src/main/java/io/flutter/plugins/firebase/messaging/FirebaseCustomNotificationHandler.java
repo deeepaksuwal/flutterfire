@@ -5,6 +5,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.net.Uri;
+import android.os.Build;
 import android.util.Log;
 
 import java.util.Date;
@@ -25,7 +26,7 @@ public class FirebaseCustomNotificationHandler extends BroadcastReceiver {
   private String latitude = "";
   private String longitude = "";
   private Intent finalIntent;
-  private static final String TAG = "FirebaseCustomNotificationHandler";
+  private static final String TAG = "FirebascationHandler";
   String token = "";
   private long date;
   private Date mDate;
@@ -61,11 +62,14 @@ public class FirebaseCustomNotificationHandler extends BroadcastReceiver {
     SharedPreferences preferences = context.getSharedPreferences("FlutterSharedPreferences", Context.MODE_PRIVATE);
     token = preferences.getString("flutter.PREFS_USER_TOKEN", "");
     username = preferences.getString("flutter.PREFS_USER_DEFAULT", "");
-    preferences.edit().putBoolean("flutter.PREFS_USER_READ_STATUS_NOTIFICATION", true).apply();
+    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.GINGERBREAD) {
+      preferences.edit().putBoolean("flutter.PREFS_USER_READ_STATUS_NOTIFICATION", true).apply();
+    }
     handleNotificationType(context, intent);
   }
 
   private void handleNotificationType(Context context, Intent intent) {
+    InsertNotificationDBHelper dbHelper = new InsertNotificationDBHelper(context);
     switch (intent.getAction()) {
       case FlutterFirebaseMessagingMyWorldLinkConstants.NOTIFICATION_DELETE:
         Log.d(TAG, "handleNotificationType: delete");
@@ -83,6 +87,7 @@ public class FirebaseCustomNotificationHandler extends BroadcastReceiver {
         finalIntent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_SINGLE_TOP | Intent.FLAG_ACTIVITY_NEW_TASK);
         context.startActivity(finalIntent);
         FirebaseMessagingMyWorldLinkUtils.sendNotificationReadStatus(context, "seen", msgLabel, username, String.valueOf(executionId), token);
+        dbHelper.setNotificationToRead(username, executionId);
         break;
 
       case FlutterFirebaseMessagingMyWorldLinkConstants.NOTIFICATION_TYPE_2:
@@ -94,12 +99,14 @@ public class FirebaseCustomNotificationHandler extends BroadcastReceiver {
         if (intent.resolveActivity(context.getPackageManager()) != null) {
           intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_SINGLE_TOP | Intent.FLAG_ACTIVITY_NEW_TASK);
           FirebaseMessagingMyWorldLinkUtils.sendNotificationReadStatus(context, "seen", msgLabel, username, String.valueOf(executionId), token);
+          dbHelper.setNotificationToRead(username, executionId);
           context.startActivity(intent);
         }
         break;
 
       default:
         FirebaseMessagingMyWorldLinkUtils.sendNotificationReadStatus(context, "seen", msgLabel, username, String.valueOf(executionId), token);
+        dbHelper.setNotificationToRead(username, executionId);
         break;
 
     }
@@ -176,14 +183,16 @@ public class FirebaseCustomNotificationHandler extends BroadcastReceiver {
 
   private String _getImage(Intent intent) {
     if (intent.getExtras().getString(FlutterFirebaseMessagingMyWorldLinkConstants.NOTIFICATION_IMAGE) != null) {
-      return intent.getExtras().getString(FlutterFirebaseMessagingMyWorldLinkConstants.NOTIFICATION_IMAGE, "");
+      if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB_MR1) {
+        return intent.getExtras().getString(FlutterFirebaseMessagingMyWorldLinkConstants.NOTIFICATION_IMAGE);
+      }
     }
     return "";
   }
 
   private String _getSingleMessageId(Intent intent) {
     if (intent.getExtras().getString(FlutterFirebaseMessagingMyWorldLinkConstants.NOTIFICATION_SINGLE_MESSAGE_ID) != null) {
-      return intent.getExtras().getString(FlutterFirebaseMessagingMyWorldLinkConstants.NOTIFICATION_SINGLE_MESSAGE_ID, "");
+        return intent.getExtras().getString(FlutterFirebaseMessagingMyWorldLinkConstants.NOTIFICATION_SINGLE_MESSAGE_ID);
     }
     return "";
   }
@@ -192,7 +201,9 @@ public class FirebaseCustomNotificationHandler extends BroadcastReceiver {
     if (intent.getExtras().getString(FlutterFirebaseMessagingMyWorldLinkConstants.NOTIFICATION_FCM_RESPONSE_ID) != null) {
       Log.d(TAG, "_getFCMResponseId: " + intent.getExtras().getString(FlutterFirebaseMessagingMyWorldLinkConstants.NOTIFICATION_FCM_RESPONSE_ID));
 
-      return intent.getExtras().getString(FlutterFirebaseMessagingMyWorldLinkConstants.NOTIFICATION_FCM_RESPONSE_ID, "");
+      if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB_MR1) {
+        return intent.getExtras().getString(FlutterFirebaseMessagingMyWorldLinkConstants.NOTIFICATION_FCM_RESPONSE_ID);
+      }
     }
     return "";
   }
@@ -204,7 +215,7 @@ public class FirebaseCustomNotificationHandler extends BroadcastReceiver {
 
   private String _getMsgLabel(Intent intent) {
     if (intent.getExtras().getString(FlutterFirebaseMessagingMyWorldLinkConstants.NOTIFICATION_MSG_LABEL) != null) {
-      return intent.getExtras().getString(FlutterFirebaseMessagingMyWorldLinkConstants.NOTIFICATION_MSG_LABEL, "");
+      return intent.getExtras().getString(FlutterFirebaseMessagingMyWorldLinkConstants.NOTIFICATION_MSG_LABEL);
     }
     return "";
   }
