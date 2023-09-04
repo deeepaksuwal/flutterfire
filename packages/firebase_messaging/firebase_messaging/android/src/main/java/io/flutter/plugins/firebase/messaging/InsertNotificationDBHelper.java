@@ -105,7 +105,7 @@ public class InsertNotificationDBHelper extends SQLiteOpenHelper {
       SQLiteDatabase db = this.getWritableDatabase();
       ContentValues values = new ContentValues();
 
-      values.put(USER_ACTION, "1");
+      values.put(USER_ACTION, "seen");
 
       String whereClause = "username = ? AND execution_id = ?";
       String[] whereArgs = {username, executionId};
