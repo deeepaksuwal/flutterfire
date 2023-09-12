@@ -95,28 +95,51 @@ public class FlutterFirebaseMessagingBackgroundService extends JobIntentService 
     PendingIntent contentIntent, deletePendingIntent = null;
     Random randInt = new Random();
     int randomInt = randInt.nextInt(100000);
-    NotificationCompat.Builder mBuilder = new NotificationCompat.Builder(context, FlutterFirebaseMessagingMyWorldLinkConstants.CHANNEL_ID);
+    NotificationCompat.Builder mBuilder = new NotificationCompat.Builder(context,
+      FlutterFirebaseMessagingMyWorldLinkConstants.CHANNEL_ID);
+
+    NotificationManager mNotificationManager = null;
+    mNotificationManager = (NotificationManager)
+      context.getSystemService(Context.NOTIFICATION_SERVICE);
+
+    for (Map.Entry<String, String> entry : message.getData().entrySet()) {
+      bundle.putString(entry.getKey(), entry.getValue());
+    }
 
     if (Freshchat.isFreshchatNotification(message)) {
       Freshchat.handleFcmMessage(context, message);
       Log.d(TAG, "handleNotificationOnBackgroundOnly freshchat" + message.getData());
       intent = new Intent(context, FirebaseCustomNotificationHandler.class);
+      intent.setAction(getAction(0));
+
       deleteIntent = new Intent(context, FirebaseCustomNotificationHandler.class);
 
-      if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+      if (Build.VERSION.SDK_INT >= 31) {
         contentIntent = PendingIntent.getActivity(context, randomInt, intent, PendingIntent.FLAG_IMMUTABLE);
         deletePendingIntent = getDeletePendingIntent(context, deleteIntent, fcmResponseId, subject, 0,
           notice, link, Calendar.getInstance().getTimeInMillis(),
           image, singleMessageId, executionId, msgLabel, diagnosticIdx, macAddress, latitude, longitude);
 
+        int importance = 0;
+        importance = NotificationManager.IMPORTANCE_HIGH;
+        NotificationChannel notificationChannel =
+          new NotificationChannel(FlutterFirebaseMessagingMyWorldLinkConstants.CHANNEL_ID,
+            FlutterFirebaseMessagingMyWorldLinkConstants.CHANNEL_ID, importance);
+        mNotificationManager.createNotificationChannel(notificationChannel);
+        mBuilder.setContentTitle(bundle.getString("body"));
+        mBuilder.setAutoCancel(true);
         mBuilder.setContentIntent(contentIntent);
+        mBuilder.setChannelId(FlutterFirebaseMessagingMyWorldLinkConstants.CHANNEL_ID);
         mBuilder.setDeleteIntent(deletePendingIntent);
-      }
-    } else {
+        mBuilder.setSmallIcon(R.drawable.ic_notification_o);
+        mBuilder.setColorized(true);
+        mBuilder.setColor(context.getResources().getColor(R.color.colorPrimary));
 
-      for (Map.Entry<String, String> entry : message.getData().entrySet()) {
-        bundle.putString(entry.getKey(), entry.getValue());
+        mBuilder.setDefaults(Notification.DEFAULT_SOUND);
+        mNotificationManager.notify(randomInt, mBuilder.build());
       }
+
+    } else {
       type = Integer.parseInt(bundle.getString("type"));
       Log.d(TAG, "handleNotificationOnBackgroundOnly: type  " + type);
       if (type == 1 || type == 2 || type == 7) {
@@ -148,9 +171,7 @@ public class FlutterFirebaseMessagingBackgroundService extends JobIntentService 
           link = "";
         }
         Log.d(TAG, "handleNotificationOnBackgroundOnly: execution id  " + executionId);
-        NotificationManager mNotificationManager = null;
-        mNotificationManager = (NotificationManager)
-          context.getSystemService(Context.NOTIFICATION_SERVICE);
+
         if (Build.VERSION.SDK_INT >= 31) {
           if (getAction(type).equals(FlutterFirebaseMessagingMyWorldLinkConstants.NOTIFICATION_DELETE)) {
             intent = new Intent(context, FirebaseCustomNotificationHandler.class);
@@ -256,10 +277,12 @@ public class FlutterFirebaseMessagingBackgroundService extends JobIntentService 
           mBuilder.setSmallIcon(R.drawable.notification);
         }
 
-        if (image.isEmpty()) {
-          mBuilder.setStyle(new NotificationCompat.BigTextStyle().bigText(notice));
-        } else {
-          getBitmapAsyncAndDoWork(image, context, mBuilder, mNotificationManager, randomInt);
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.GINGERBREAD) {
+          if (image.isEmpty()) {
+            mBuilder.setStyle(new NotificationCompat.BigTextStyle().bigText(notice));
+          } else {
+            getBitmapAsyncAndDoWork(image, context, mBuilder, mNotificationManager, randomInt);
+          }
         }
 
         mBuilder.setDefaults(Notification.DEFAULT_SOUND);
