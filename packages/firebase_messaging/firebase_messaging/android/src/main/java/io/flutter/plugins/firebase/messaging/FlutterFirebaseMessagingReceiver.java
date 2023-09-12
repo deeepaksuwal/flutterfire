@@ -50,6 +50,7 @@ public class FlutterFirebaseMessagingReceiver extends BroadcastReceiver {
         LocalBroadcastManager.getInstance(context).sendBroadcast(onMessageIntent);
         return;
       }
+    }
 
       //  |-> ---------------------
       //    App in Background/Quit
@@ -60,6 +61,5 @@ public class FlutterFirebaseMessagingReceiver extends BroadcastReceiver {
         FlutterFirebaseMessagingUtils.EXTRA_REMOTE_MESSAGE, remoteMessage);
       FlutterFirebaseMessagingBackgroundService.enqueueMessageProcessing(
         context, onBackgroundMessageIntent);
-    }
   }
 }

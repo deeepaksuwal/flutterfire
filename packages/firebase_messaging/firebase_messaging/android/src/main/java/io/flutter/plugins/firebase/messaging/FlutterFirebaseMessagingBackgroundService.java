@@ -91,9 +91,23 @@ public class FlutterFirebaseMessagingBackgroundService extends JobIntentService 
     String msgLabel = "";
     RemoteMessage message = messageIntent.getParcelableExtra(FlutterFirebaseMessagingUtils.EXTRA_REMOTE_MESSAGE);
     Log.e(TAG, "handleNotificationOnBackgroundOnly DATA " + message.getData());
+    Intent intent, deleteIntent = null;
+    PendingIntent contentIntent, deletePendingIntent = null;
+    Random randInt = new Random();
+    int randomInt = randInt.nextInt(100000);
+    NotificationCompat.Builder mBuilder = new NotificationCompat.Builder(context, FlutterFirebaseMessagingMyWorldLinkConstants.CHANNEL_ID);
 
     if (Freshchat.isFreshchatNotification(message)) {
       Freshchat.handleFcmMessage(context, message);
+      Log.d("handleNotificationOnBackgroundOnly freshchat"+message.getData());
+      intent = new Intent(context, FirebaseCustomNotificationHandler.class);
+      deleteIntent = new Intent(context, FirebaseCustomNotificationHandler.class);
+
+      if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+        contentIntent = PendingIntent.getActivity(context, randomInt, intent, PendingIntent.FLAG_IMMUTABLE);
+        mBuilder.setContentIntent(contentIntent);
+        mBuilder.setDeleteIntent(deleteIntent);
+      }
     } else {
 
       for (Map.Entry<String, String> entry : message.getData().entrySet()) {
@@ -102,7 +116,7 @@ public class FlutterFirebaseMessagingBackgroundService extends JobIntentService 
       type = Integer.parseInt(bundle.getString("type"));
       Log.d(TAG, "handleNotificationOnBackgroundOnly: type  " + type);
       if (type == 1 || type == 2 || type == 7) {
-        Intent intent, deleteIntent = null;
+
         link = bundle.getString("link");
         date = Calendar.getInstance().getTimeInMillis();
         notice = bundle.getString("Notice");
@@ -130,13 +144,10 @@ public class FlutterFirebaseMessagingBackgroundService extends JobIntentService 
           link = "";
         }
         Log.d(TAG, "handleNotificationOnBackgroundOnly: execution id  " + executionId);
-        Random randInt = new Random();
-        int randomInt = randInt.nextInt(100000);
         NotificationManager mNotificationManager = null;
         mNotificationManager = (NotificationManager)
           context.getSystemService(Context.NOTIFICATION_SERVICE);
-        PendingIntent contentIntent, deletePendingIntent = null;
-        if (android.os.Build.VERSION.SDK_INT >= 31) {
+        if (Build.VERSION.SDK_INT >= 31) {
           if (getAction(type).equals(FlutterFirebaseMessagingMyWorldLinkConstants.NOTIFICATION_DELETE)) {
             intent = new Intent(context, FirebaseCustomNotificationHandler.class);
             deleteIntent = new Intent(context, FirebaseCustomNotificationHandler.class);
@@ -227,7 +238,6 @@ public class FlutterFirebaseMessagingBackgroundService extends JobIntentService 
               FlutterFirebaseMessagingMyWorldLinkConstants.CHANNEL_ID, importance);
           mNotificationManager.createNotificationChannel(notificationChannel);
         }
-        NotificationCompat.Builder mBuilder = new NotificationCompat.Builder(context, FlutterFirebaseMessagingMyWorldLinkConstants.CHANNEL_ID);
         mBuilder.setContentTitle(subject);
         mBuilder.setContentText(notice);
         mBuilder.setAutoCancel(true);
