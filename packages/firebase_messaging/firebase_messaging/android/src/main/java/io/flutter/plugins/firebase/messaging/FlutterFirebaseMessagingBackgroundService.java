@@ -43,6 +43,7 @@ import java.util.Random;
 
 import android.content.SharedPreferences;
 
+import com.freshchat.consumer.sdk.Freshchat;
 
 public class FlutterFirebaseMessagingBackgroundService extends JobIntentService {
   private static final String TAG = "FLTFireMsgService";
@@ -90,161 +91,167 @@ public class FlutterFirebaseMessagingBackgroundService extends JobIntentService 
     String msgLabel = "";
     RemoteMessage message = messageIntent.getParcelableExtra(FlutterFirebaseMessagingUtils.EXTRA_REMOTE_MESSAGE);
     Log.e(TAG, "handleNotificationOnBackgroundOnly DATA " + message.getData());
-    for (Map.Entry<String, String> entry : message.getData().entrySet()) {
-      bundle.putString(entry.getKey(), entry.getValue());
-    }
-    type = Integer.parseInt(bundle.getString("type"));
-    Log.d(TAG, "handleNotificationOnBackgroundOnly: type  " + type);
-    if (type == 1 || type == 2 || type == 7) {
-      Intent intent, deleteIntent = null;
-      link = bundle.getString("link");
-      date = Calendar.getInstance().getTimeInMillis();
-      notice = bundle.getString("Notice");
-      image = bundle.getString("image");
-      diagnosticIdx = bundle.getString("diagnostic_idx");
-      macAddress = bundle.getString("mac_address");
-      latitude = bundle.getString("latitude");
-      longitude = bundle.getString("longitude");
-      subject = bundle.getString("subject");
-      singleMessageId = bundle.getString("single_message_id");
-      executionId = Integer.parseInt(bundle.getString("execution_id"));
-      fcmResponseId = bundle.getString("fcm_response_id");
-      msgLabel = bundle.getString("msg_label");
-      SharedPreferences preferences = context.getSharedPreferences("FlutterSharedPreferences", Context.MODE_PRIVATE);
-      String token = preferences.getString("flutter.PREFS_USER_TOKEN", "");
-      String username = preferences.getString("flutter.PREFS_USER_DEFAULT", "");
 
-      if (image == null) {
-        image = "";
+    if (Freshchat.isFreshchatNotification(message)) {
+      Freshchat.handleFcmMessage(context, message);
+    } else {
+
+      for (Map.Entry<String, String> entry : message.getData().entrySet()) {
+        bundle.putString(entry.getKey(), entry.getValue());
       }
-      if (diagnosticIdx == null) {
-        diagnosticIdx = "";
-      }
-      if (link == null) {
-        link = "";
-      }
-      Log.d(TAG, "handleNotificationOnBackgroundOnly: execution id  " + executionId);
-      Random randInt = new Random();
-      int randomInt = randInt.nextInt(100000);
-      NotificationManager mNotificationManager = null;
-      mNotificationManager = (NotificationManager)
-        context.getSystemService(Context.NOTIFICATION_SERVICE);
-      PendingIntent contentIntent, deletePendingIntent = null;
-      if (android.os.Build.VERSION.SDK_INT >= 31) {
-        if (getAction(type).equals(FlutterFirebaseMessagingMyWorldLinkConstants.NOTIFICATION_DELETE)) {
-          intent = new Intent(context, FirebaseCustomNotificationHandler.class);
-          deleteIntent = new Intent(context, FirebaseCustomNotificationHandler.class);
-          intent.setAction(getAction(type));
-          contentIntent = PendingIntent.getBroadcast(context, randomInt, intent, PendingIntent.FLAG_IMMUTABLE);
-        } else {
-          if (getAction(type).equals(FlutterFirebaseMessagingMyWorldLinkConstants.NOTIFICATION_TYPE_1)) {
-            intent = new Intent(context, NotificationRedirectionHandler.class);
-            deleteIntent = new Intent(context, FirebaseCustomNotificationHandler.class);
-            intent.setAction(getAction(type));
-            intent.putExtra(FlutterFirebaseMessagingMyWorldLinkConstants.NOTIFICATION_LINK, link);
-            intent.putExtra(FlutterFirebaseMessagingMyWorldLinkConstants.NOTIFICATION_DATE, date);
-            intent.putExtra(FlutterFirebaseMessagingMyWorldLinkConstants.NOTIFICATION_NOTICE, notice);
-            intent.putExtra(FlutterFirebaseMessagingMyWorldLinkConstants.NOTIFICATION_SUBJECT, subject);
-            intent.putExtra(FlutterFirebaseMessagingMyWorldLinkConstants.NOTIFICATION_TYPE, type);
-            intent.putExtra(FlutterFirebaseMessagingMyWorldLinkConstants.NOTIFICATION_IMAGE, image);
-            intent.putExtra(FlutterFirebaseMessagingMyWorldLinkConstants.NOTIFICATION_DIAGNOSTIC_IDX, diagnosticIdx);
-            intent.putExtra(FlutterFirebaseMessagingMyWorldLinkConstants.NOTIFICATION_MAC_ADDRESS, macAddress);
-            intent.putExtra(FlutterFirebaseMessagingMyWorldLinkConstants.NOTIFICATION_LATITUDE, latitude);
-            intent.putExtra(FlutterFirebaseMessagingMyWorldLinkConstants.NOTIFICATION_LONGITUDE, longitude);
-            intent.putExtra(FlutterFirebaseMessagingMyWorldLinkConstants.NOTIFICATION_SINGLE_MESSAGE_ID, singleMessageId);
-            intent.putExtra(FlutterFirebaseMessagingMyWorldLinkConstants.NOTIFICATION_EXECUTION_ID, executionId);
-            intent.putExtra(FlutterFirebaseMessagingMyWorldLinkConstants.NOTIFICATION_FCM_RESPONSE_ID, fcmResponseId);
-            intent.putExtra(FlutterFirebaseMessagingMyWorldLinkConstants.NOTIFICATION_MSG_LABEL, msgLabel);
-            intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK | Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_NEW_TASK);
-          } else if (getAction(type).equals(FlutterFirebaseMessagingMyWorldLinkConstants.NOTIFICATION_TYPE_2)) {
-            intent = new Intent(context, NotificationRedirectionHandler.class);
-            intent.setAction(getAction(type));
-            deleteIntent = new Intent(context, FirebaseCustomNotificationHandler.class);
-            intent.putExtra(FlutterFirebaseMessagingMyWorldLinkConstants.NOTIFICATION_LINK, link);
-            intent.putExtra(FlutterFirebaseMessagingMyWorldLinkConstants.NOTIFICATION_DATE, date);
-            intent.putExtra(FlutterFirebaseMessagingMyWorldLinkConstants.NOTIFICATION_NOTICE, notice);
-            intent.putExtra(FlutterFirebaseMessagingMyWorldLinkConstants.NOTIFICATION_SUBJECT, subject);
-            intent.putExtra(FlutterFirebaseMessagingMyWorldLinkConstants.NOTIFICATION_TYPE, type);
-            intent.putExtra(FlutterFirebaseMessagingMyWorldLinkConstants.NOTIFICATION_IMAGE, image);
-            intent.putExtra(FlutterFirebaseMessagingMyWorldLinkConstants.NOTIFICATION_DIAGNOSTIC_IDX, diagnosticIdx);
-            intent.putExtra(FlutterFirebaseMessagingMyWorldLinkConstants.NOTIFICATION_MAC_ADDRESS, macAddress);
-            intent.putExtra(FlutterFirebaseMessagingMyWorldLinkConstants.NOTIFICATION_LATITUDE, latitude);
-            intent.putExtra(FlutterFirebaseMessagingMyWorldLinkConstants.NOTIFICATION_LONGITUDE, longitude);
-            intent.putExtra(FlutterFirebaseMessagingMyWorldLinkConstants.NOTIFICATION_SINGLE_MESSAGE_ID, singleMessageId);
-            intent.putExtra(FlutterFirebaseMessagingMyWorldLinkConstants.NOTIFICATION_EXECUTION_ID, executionId);
-            intent.putExtra(FlutterFirebaseMessagingMyWorldLinkConstants.NOTIFICATION_FCM_RESPONSE_ID, fcmResponseId);
-            intent.putExtra(FlutterFirebaseMessagingMyWorldLinkConstants.NOTIFICATION_MSG_LABEL, msgLabel);
-            intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK | Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_NEW_TASK);
-          } else {
+      type = Integer.parseInt(bundle.getString("type"));
+      Log.d(TAG, "handleNotificationOnBackgroundOnly: type  " + type);
+      if (type == 1 || type == 2 || type == 7) {
+        Intent intent, deleteIntent = null;
+        link = bundle.getString("link");
+        date = Calendar.getInstance().getTimeInMillis();
+        notice = bundle.getString("Notice");
+        image = bundle.getString("image");
+        diagnosticIdx = bundle.getString("diagnostic_idx");
+        macAddress = bundle.getString("mac_address");
+        latitude = bundle.getString("latitude");
+        longitude = bundle.getString("longitude");
+        subject = bundle.getString("subject");
+        singleMessageId = bundle.getString("single_message_id");
+        executionId = Integer.parseInt(bundle.getString("execution_id"));
+        fcmResponseId = bundle.getString("fcm_response_id");
+        msgLabel = bundle.getString("msg_label");
+        SharedPreferences preferences = context.getSharedPreferences("FlutterSharedPreferences", Context.MODE_PRIVATE);
+        String token = preferences.getString("flutter.PREFS_USER_TOKEN", "");
+        String username = preferences.getString("flutter.PREFS_USER_DEFAULT", "");
+
+        if (image == null) {
+          image = "";
+        }
+        if (diagnosticIdx == null) {
+          diagnosticIdx = "";
+        }
+        if (link == null) {
+          link = "";
+        }
+        Log.d(TAG, "handleNotificationOnBackgroundOnly: execution id  " + executionId);
+        Random randInt = new Random();
+        int randomInt = randInt.nextInt(100000);
+        NotificationManager mNotificationManager = null;
+        mNotificationManager = (NotificationManager)
+          context.getSystemService(Context.NOTIFICATION_SERVICE);
+        PendingIntent contentIntent, deletePendingIntent = null;
+        if (android.os.Build.VERSION.SDK_INT >= 31) {
+          if (getAction(type).equals(FlutterFirebaseMessagingMyWorldLinkConstants.NOTIFICATION_DELETE)) {
             intent = new Intent(context, FirebaseCustomNotificationHandler.class);
             deleteIntent = new Intent(context, FirebaseCustomNotificationHandler.class);
-            FirebaseMessagingMyWorldLinkUtils.sendNotificationReadStatus(context, "seen", msgLabel, username, String.valueOf(executionId), token);
+            intent.setAction(getAction(type));
+            contentIntent = PendingIntent.getBroadcast(context, randomInt, intent, PendingIntent.FLAG_IMMUTABLE);
+          } else {
+            if (getAction(type).equals(FlutterFirebaseMessagingMyWorldLinkConstants.NOTIFICATION_TYPE_1)) {
+              intent = new Intent(context, NotificationRedirectionHandler.class);
+              deleteIntent = new Intent(context, FirebaseCustomNotificationHandler.class);
+              intent.setAction(getAction(type));
+              intent.putExtra(FlutterFirebaseMessagingMyWorldLinkConstants.NOTIFICATION_LINK, link);
+              intent.putExtra(FlutterFirebaseMessagingMyWorldLinkConstants.NOTIFICATION_DATE, date);
+              intent.putExtra(FlutterFirebaseMessagingMyWorldLinkConstants.NOTIFICATION_NOTICE, notice);
+              intent.putExtra(FlutterFirebaseMessagingMyWorldLinkConstants.NOTIFICATION_SUBJECT, subject);
+              intent.putExtra(FlutterFirebaseMessagingMyWorldLinkConstants.NOTIFICATION_TYPE, type);
+              intent.putExtra(FlutterFirebaseMessagingMyWorldLinkConstants.NOTIFICATION_IMAGE, image);
+              intent.putExtra(FlutterFirebaseMessagingMyWorldLinkConstants.NOTIFICATION_DIAGNOSTIC_IDX, diagnosticIdx);
+              intent.putExtra(FlutterFirebaseMessagingMyWorldLinkConstants.NOTIFICATION_MAC_ADDRESS, macAddress);
+              intent.putExtra(FlutterFirebaseMessagingMyWorldLinkConstants.NOTIFICATION_LATITUDE, latitude);
+              intent.putExtra(FlutterFirebaseMessagingMyWorldLinkConstants.NOTIFICATION_LONGITUDE, longitude);
+              intent.putExtra(FlutterFirebaseMessagingMyWorldLinkConstants.NOTIFICATION_SINGLE_MESSAGE_ID, singleMessageId);
+              intent.putExtra(FlutterFirebaseMessagingMyWorldLinkConstants.NOTIFICATION_EXECUTION_ID, executionId);
+              intent.putExtra(FlutterFirebaseMessagingMyWorldLinkConstants.NOTIFICATION_FCM_RESPONSE_ID, fcmResponseId);
+              intent.putExtra(FlutterFirebaseMessagingMyWorldLinkConstants.NOTIFICATION_MSG_LABEL, msgLabel);
+              intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK | Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_NEW_TASK);
+            } else if (getAction(type).equals(FlutterFirebaseMessagingMyWorldLinkConstants.NOTIFICATION_TYPE_2)) {
+              intent = new Intent(context, NotificationRedirectionHandler.class);
+              intent.setAction(getAction(type));
+              deleteIntent = new Intent(context, FirebaseCustomNotificationHandler.class);
+              intent.putExtra(FlutterFirebaseMessagingMyWorldLinkConstants.NOTIFICATION_LINK, link);
+              intent.putExtra(FlutterFirebaseMessagingMyWorldLinkConstants.NOTIFICATION_DATE, date);
+              intent.putExtra(FlutterFirebaseMessagingMyWorldLinkConstants.NOTIFICATION_NOTICE, notice);
+              intent.putExtra(FlutterFirebaseMessagingMyWorldLinkConstants.NOTIFICATION_SUBJECT, subject);
+              intent.putExtra(FlutterFirebaseMessagingMyWorldLinkConstants.NOTIFICATION_TYPE, type);
+              intent.putExtra(FlutterFirebaseMessagingMyWorldLinkConstants.NOTIFICATION_IMAGE, image);
+              intent.putExtra(FlutterFirebaseMessagingMyWorldLinkConstants.NOTIFICATION_DIAGNOSTIC_IDX, diagnosticIdx);
+              intent.putExtra(FlutterFirebaseMessagingMyWorldLinkConstants.NOTIFICATION_MAC_ADDRESS, macAddress);
+              intent.putExtra(FlutterFirebaseMessagingMyWorldLinkConstants.NOTIFICATION_LATITUDE, latitude);
+              intent.putExtra(FlutterFirebaseMessagingMyWorldLinkConstants.NOTIFICATION_LONGITUDE, longitude);
+              intent.putExtra(FlutterFirebaseMessagingMyWorldLinkConstants.NOTIFICATION_SINGLE_MESSAGE_ID, singleMessageId);
+              intent.putExtra(FlutterFirebaseMessagingMyWorldLinkConstants.NOTIFICATION_EXECUTION_ID, executionId);
+              intent.putExtra(FlutterFirebaseMessagingMyWorldLinkConstants.NOTIFICATION_FCM_RESPONSE_ID, fcmResponseId);
+              intent.putExtra(FlutterFirebaseMessagingMyWorldLinkConstants.NOTIFICATION_MSG_LABEL, msgLabel);
+              intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK | Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_NEW_TASK);
+            } else {
+              intent = new Intent(context, FirebaseCustomNotificationHandler.class);
+              deleteIntent = new Intent(context, FirebaseCustomNotificationHandler.class);
+              FirebaseMessagingMyWorldLinkUtils.sendNotificationReadStatus(context, "seen", msgLabel, username, String.valueOf(executionId), token);
 
+            }
+            contentIntent = PendingIntent.getActivity(context, randomInt, intent, PendingIntent.FLAG_IMMUTABLE);
           }
-          contentIntent = PendingIntent.getActivity(context, randomInt, intent, PendingIntent.FLAG_IMMUTABLE);
+          deletePendingIntent = getDeletePendingIntent(context, deleteIntent, fcmResponseId, subject, type, notice, link, date,
+            image, singleMessageId, executionId, msgLabel, diagnosticIdx, macAddress, latitude, longitude);
+
+        } else {
+          intent = new Intent(context, FirebaseCustomNotificationHandler.class);
+          intent.setAction(getAction(type));
+          geExtra(context, intent, type, link);
+          intent.putExtra(FlutterFirebaseMessagingMyWorldLinkConstants.NOTIFICATION_LINK, link);
+          intent.putExtra(FlutterFirebaseMessagingMyWorldLinkConstants.NOTIFICATION_DATE, date);
+          intent.putExtra(FlutterFirebaseMessagingMyWorldLinkConstants.NOTIFICATION_NOTICE, notice);
+          intent.putExtra(FlutterFirebaseMessagingMyWorldLinkConstants.NOTIFICATION_SUBJECT, subject);
+          intent.putExtra(FlutterFirebaseMessagingMyWorldLinkConstants.NOTIFICATION_TYPE, type);
+          intent.putExtra(FlutterFirebaseMessagingMyWorldLinkConstants.NOTIFICATION_IMAGE, image);
+          intent.putExtra(FlutterFirebaseMessagingMyWorldLinkConstants.NOTIFICATION_DIAGNOSTIC_IDX, diagnosticIdx);
+          intent.putExtra(FlutterFirebaseMessagingMyWorldLinkConstants.NOTIFICATION_MAC_ADDRESS, macAddress);
+          intent.putExtra(FlutterFirebaseMessagingMyWorldLinkConstants.NOTIFICATION_LATITUDE, latitude);
+          intent.putExtra(FlutterFirebaseMessagingMyWorldLinkConstants.NOTIFICATION_LONGITUDE, longitude);
+          intent.putExtra(FlutterFirebaseMessagingMyWorldLinkConstants.NOTIFICATION_SINGLE_MESSAGE_ID, singleMessageId);
+          intent.putExtra(FlutterFirebaseMessagingMyWorldLinkConstants.NOTIFICATION_EXECUTION_ID, executionId);
+          intent.putExtra(FlutterFirebaseMessagingMyWorldLinkConstants.NOTIFICATION_FCM_RESPONSE_ID, fcmResponseId);
+          intent.putExtra(FlutterFirebaseMessagingMyWorldLinkConstants.NOTIFICATION_MSG_LABEL, msgLabel);
+          intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK | Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_NEW_TASK);
+          contentIntent = PendingIntent.getBroadcast(context, randomInt, intent, PendingIntent.FLAG_UPDATE_CURRENT);
+          deletePendingIntent = getDeletePendingIntent(context, null, fcmResponseId, subject, type, notice, link, date,
+            image, singleMessageId, executionId, msgLabel, diagnosticIdx, macAddress, latitude, longitude);
         }
-        deletePendingIntent = getDeletePendingIntent(context, deleteIntent, fcmResponseId, subject, type, notice, link, date,
-          image, singleMessageId, executionId, msgLabel, diagnosticIdx,macAddress,latitude,longitude);
-
-      } else {
-        intent = new Intent(context, FirebaseCustomNotificationHandler.class);
-        intent.setAction(getAction(type));
-        geExtra(context, intent, type, link);
-        intent.putExtra(FlutterFirebaseMessagingMyWorldLinkConstants.NOTIFICATION_LINK, link);
-        intent.putExtra(FlutterFirebaseMessagingMyWorldLinkConstants.NOTIFICATION_DATE, date);
-        intent.putExtra(FlutterFirebaseMessagingMyWorldLinkConstants.NOTIFICATION_NOTICE, notice);
-        intent.putExtra(FlutterFirebaseMessagingMyWorldLinkConstants.NOTIFICATION_SUBJECT, subject);
-        intent.putExtra(FlutterFirebaseMessagingMyWorldLinkConstants.NOTIFICATION_TYPE, type);
-        intent.putExtra(FlutterFirebaseMessagingMyWorldLinkConstants.NOTIFICATION_IMAGE, image);
-        intent.putExtra(FlutterFirebaseMessagingMyWorldLinkConstants.NOTIFICATION_DIAGNOSTIC_IDX, diagnosticIdx);
-        intent.putExtra(FlutterFirebaseMessagingMyWorldLinkConstants.NOTIFICATION_MAC_ADDRESS, macAddress);
-        intent.putExtra(FlutterFirebaseMessagingMyWorldLinkConstants.NOTIFICATION_LATITUDE, latitude);
-        intent.putExtra(FlutterFirebaseMessagingMyWorldLinkConstants.NOTIFICATION_LONGITUDE, longitude);
-        intent.putExtra(FlutterFirebaseMessagingMyWorldLinkConstants.NOTIFICATION_SINGLE_MESSAGE_ID, singleMessageId);
-        intent.putExtra(FlutterFirebaseMessagingMyWorldLinkConstants.NOTIFICATION_EXECUTION_ID, executionId);
-        intent.putExtra(FlutterFirebaseMessagingMyWorldLinkConstants.NOTIFICATION_FCM_RESPONSE_ID, fcmResponseId);
-        intent.putExtra(FlutterFirebaseMessagingMyWorldLinkConstants.NOTIFICATION_MSG_LABEL, msgLabel);
-        intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK | Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_NEW_TASK);
-        contentIntent = PendingIntent.getBroadcast(context, randomInt, intent, PendingIntent.FLAG_UPDATE_CURRENT);
-        deletePendingIntent = getDeletePendingIntent(context, null, fcmResponseId, subject, type, notice, link, date,
-          image, singleMessageId, executionId, msgLabel, diagnosticIdx, macAddress, latitude, longitude);
-      }
 
 
-      int importance = 0;
-      if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
-        importance = NotificationManager.IMPORTANCE_HIGH;
-      }
-      if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-        NotificationChannel notificationChannel =
-          new NotificationChannel(FlutterFirebaseMessagingMyWorldLinkConstants.CHANNEL_ID,
-            FlutterFirebaseMessagingMyWorldLinkConstants.CHANNEL_ID, importance);
-        mNotificationManager.createNotificationChannel(notificationChannel);
-      }
-      NotificationCompat.Builder mBuilder = new NotificationCompat.Builder(context, FlutterFirebaseMessagingMyWorldLinkConstants.CHANNEL_ID);
-      mBuilder.setContentTitle(subject);
-      mBuilder.setContentText(notice);
-      mBuilder.setAutoCancel(true);
-      mBuilder.setContentIntent(contentIntent);
-      mBuilder.setChannelId(FlutterFirebaseMessagingMyWorldLinkConstants.CHANNEL_ID);
-      mBuilder.setDeleteIntent(deletePendingIntent);
-      if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-        mBuilder.setSmallIcon(R.drawable.ic_notification_o);
-        mBuilder.setColorized(true);
-        mBuilder.setColor(context.getResources().getColor(R.color.colorPrimary));
-      } else {
-        mBuilder.setSmallIcon(R.drawable.notification);
-      }
+        int importance = 0;
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
+          importance = NotificationManager.IMPORTANCE_HIGH;
+        }
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+          NotificationChannel notificationChannel =
+            new NotificationChannel(FlutterFirebaseMessagingMyWorldLinkConstants.CHANNEL_ID,
+              FlutterFirebaseMessagingMyWorldLinkConstants.CHANNEL_ID, importance);
+          mNotificationManager.createNotificationChannel(notificationChannel);
+        }
+        NotificationCompat.Builder mBuilder = new NotificationCompat.Builder(context, FlutterFirebaseMessagingMyWorldLinkConstants.CHANNEL_ID);
+        mBuilder.setContentTitle(subject);
+        mBuilder.setContentText(notice);
+        mBuilder.setAutoCancel(true);
+        mBuilder.setContentIntent(contentIntent);
+        mBuilder.setChannelId(FlutterFirebaseMessagingMyWorldLinkConstants.CHANNEL_ID);
+        mBuilder.setDeleteIntent(deletePendingIntent);
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+          mBuilder.setSmallIcon(R.drawable.ic_notification_o);
+          mBuilder.setColorized(true);
+          mBuilder.setColor(context.getResources().getColor(R.color.colorPrimary));
+        } else {
+          mBuilder.setSmallIcon(R.drawable.notification);
+        }
 
-      if (image.isEmpty()) {
-        mBuilder.setStyle(new NotificationCompat.BigTextStyle().bigText(notice));
-      } else {
-        getBitmapAsyncAndDoWork(image, context, mBuilder, mNotificationManager, randomInt);
-      }
+        if (image.isEmpty()) {
+          mBuilder.setStyle(new NotificationCompat.BigTextStyle().bigText(notice));
+        } else {
+          getBitmapAsyncAndDoWork(image, context, mBuilder, mNotificationManager, randomInt);
+        }
 
-      mBuilder.setDefaults(Notification.DEFAULT_SOUND);
-      if (mNotificationManager != null) {
-        mNotificationManager.notify(randomInt, mBuilder.build());
+        mBuilder.setDefaults(Notification.DEFAULT_SOUND);
+        if (mNotificationManager != null) {
+          mNotificationManager.notify(randomInt, mBuilder.build());
+        }
       }
     }
   }
