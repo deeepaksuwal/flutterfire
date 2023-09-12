@@ -99,14 +99,18 @@ public class FlutterFirebaseMessagingBackgroundService extends JobIntentService 
 
     if (Freshchat.isFreshchatNotification(message)) {
       Freshchat.handleFcmMessage(context, message);
-      Log.d("handleNotificationOnBackgroundOnly freshchat"+message.getData());
+      Log.d(TAG, "handleNotificationOnBackgroundOnly freshchat" + message.getData());
       intent = new Intent(context, FirebaseCustomNotificationHandler.class);
       deleteIntent = new Intent(context, FirebaseCustomNotificationHandler.class);
 
       if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
         contentIntent = PendingIntent.getActivity(context, randomInt, intent, PendingIntent.FLAG_IMMUTABLE);
+        deletePendingIntent = getDeletePendingIntent(context, deleteIntent, fcmResponseId, subject, 0,
+          notice, link, Calendar.getInstance().getTimeInMillis(),
+          image, singleMessageId, executionId, msgLabel, diagnosticIdx, macAddress, latitude, longitude);
+
         mBuilder.setContentIntent(contentIntent);
-        mBuilder.setDeleteIntent(deleteIntent);
+        mBuilder.setDeleteIntent(deletePendingIntent);
       }
     } else {
 
