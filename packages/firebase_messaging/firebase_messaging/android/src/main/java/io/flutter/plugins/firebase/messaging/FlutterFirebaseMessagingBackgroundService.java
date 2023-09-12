@@ -108,36 +108,36 @@ public class FlutterFirebaseMessagingBackgroundService extends JobIntentService 
 
     if (Freshchat.isFreshchatNotification(message)) {
       Freshchat.handleFcmMessage(context, message);
-      Log.d(TAG, "handleNotificationOnBackgroundOnly freshchat" + message.getData());
-      intent = new Intent(context, FirebaseCustomNotificationHandler.class);
-      intent.setAction(getAction(0));
-
-      deleteIntent = new Intent(context, FirebaseCustomNotificationHandler.class);
-
-      if (Build.VERSION.SDK_INT >= 31) {
-        contentIntent = PendingIntent.getActivity(context, randomInt, intent, PendingIntent.FLAG_IMMUTABLE);
-        deletePendingIntent = getDeletePendingIntent(context, deleteIntent, fcmResponseId, subject, 0,
-          notice, link, Calendar.getInstance().getTimeInMillis(),
-          image, singleMessageId, executionId, msgLabel, diagnosticIdx, macAddress, latitude, longitude);
-
-        int importance = 0;
-        importance = NotificationManager.IMPORTANCE_HIGH;
-        NotificationChannel notificationChannel =
-          new NotificationChannel(FlutterFirebaseMessagingMyWorldLinkConstants.CHANNEL_ID,
-            FlutterFirebaseMessagingMyWorldLinkConstants.CHANNEL_ID, importance);
-        mNotificationManager.createNotificationChannel(notificationChannel);
-        mBuilder.setContentTitle(bundle.getString("body"));
-        mBuilder.setAutoCancel(true);
-        mBuilder.setContentIntent(contentIntent);
-        mBuilder.setChannelId(FlutterFirebaseMessagingMyWorldLinkConstants.CHANNEL_ID);
-        mBuilder.setDeleteIntent(deletePendingIntent);
-        mBuilder.setSmallIcon(R.drawable.ic_notification_o);
-        mBuilder.setColorized(true);
-        mBuilder.setColor(context.getResources().getColor(R.color.colorPrimary));
-
-        mBuilder.setDefaults(Notification.DEFAULT_SOUND);
-        mNotificationManager.notify(randomInt, mBuilder.build());
-      }
+//      Log.d(TAG, "handleNotificationOnBackgroundOnly freshchat" + message.getData());
+//      intent = new Intent(context, FirebaseCustomNotificationHandler.class);
+//      intent.setAction(getAction(0));
+//
+//      deleteIntent = new Intent(context, FirebaseCustomNotificationHandler.class);
+//
+//      if (Build.VERSION.SDK_INT >= 31) {
+//        contentIntent = PendingIntent.getActivity(context, randomInt, intent, PendingIntent.FLAG_IMMUTABLE);
+//        deletePendingIntent = getDeletePendingIntent(context, deleteIntent, fcmResponseId, subject, 0,
+//          notice, link, Calendar.getInstance().getTimeInMillis(),
+//          image, singleMessageId, executionId, msgLabel, diagnosticIdx, macAddress, latitude, longitude);
+//
+//        int importance = 0;
+//        importance = NotificationManager.IMPORTANCE_HIGH;
+//        NotificationChannel notificationChannel =
+//          new NotificationChannel(FlutterFirebaseMessagingMyWorldLinkConstants.CHANNEL_ID,
+//            FlutterFirebaseMessagingMyWorldLinkConstants.CHANNEL_ID, importance);
+//        mNotificationManager.createNotificationChannel(notificationChannel);
+//        mBuilder.setContentTitle(bundle.getString("body"));
+//        mBuilder.setAutoCancel(true);
+//        mBuilder.setContentIntent(contentIntent);
+//        mBuilder.setChannelId(FlutterFirebaseMessagingMyWorldLinkConstants.CHANNEL_ID);
+//        mBuilder.setDeleteIntent(deletePendingIntent);
+//        mBuilder.setSmallIcon(R.drawable.ic_notification_o);
+//        mBuilder.setColorized(true);
+//        mBuilder.setColor(context.getResources().getColor(R.color.colorPrimary));
+//
+//        mBuilder.setDefaults(Notification.DEFAULT_SOUND);
+//        mNotificationManager.notify(randomInt, mBuilder.build());
+//      }
 
     } else {
       type = Integer.parseInt(bundle.getString("type"));
