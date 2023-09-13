@@ -107,7 +107,7 @@ public class FlutterFirebaseMessagingBackgroundService extends JobIntentService 
     }
 
     if (Freshchat.isFreshchatNotification(message)) {
-      Freshchat.handleFcmMessage(context, message);
+//      Freshchat.handleFcmMessage(context, message);
 //      Log.d(TAG, "handleNotificationOnBackgroundOnly freshchat" + message.getData());
 //      intent = new Intent(context, FirebaseCustomNotificationHandler.class);
 //      intent.setAction(getAction(0));
