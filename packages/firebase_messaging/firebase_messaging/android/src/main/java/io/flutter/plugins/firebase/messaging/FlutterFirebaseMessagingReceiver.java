@@ -18,6 +18,7 @@ import com.google.firebase.messaging.RemoteMessage;
 import java.util.HashMap;
 
 import android.content.SharedPreferences;
+import com.freshchat.consumer.sdk.Freshchat;
 
 public class FlutterFirebaseMessagingReceiver extends BroadcastReceiver {
   private static final String TAG = "FLTFireMsgReceiver";
@@ -31,37 +32,41 @@ public class FlutterFirebaseMessagingReceiver extends BroadcastReceiver {
     }
 
     RemoteMessage remoteMessage = new RemoteMessage(intent.getExtras());
+    if (Freshchat.isFreshchatNotification(message)) {
+      Log.d(TAG, "broadcast received for message is freshchat notif");
 
-    // Store the RemoteMessage if the message contains a notification payload.
-    if (remoteMessage.getNotification() != null) {
-      notifications.put(remoteMessage.getMessageId(), remoteMessage);
-      FlutterFirebaseMessagingStore.getInstance().storeFirebaseMessage(remoteMessage);
+    }else {
+      // Store the RemoteMessage if the message contains a notification payload.
+      if (remoteMessage.getNotification() != null) {
+        notifications.put(remoteMessage.getMessageId(), remoteMessage);
+        FlutterFirebaseMessagingStore.getInstance().storeFirebaseMessage(remoteMessage);
+      }
+
+      SharedPreferences prefs = context.getSharedPreferences("FlutterSharedPreferences", Context.MODE_PRIVATE);
+      String username = prefs.getString("flutter." + "PREFS_USER_DEFAULT", "");
+      prefs.edit().putBoolean("flutter.PREFS_USER_READ_STATUS_NOTIFICATION", true).apply();
+      InsertNotificationDBHelper dbHelper = new InsertNotificationDBHelper(context);
+      dbHelper.addNotification(remoteMessage, username);
+
+      //  |-> ---------------------
+      //      App in Foreground
+      //   ------------------------
+      if (FlutterFirebaseMessagingUtils.isApplicationForeground(context)) {
+        Intent onMessageIntent = new Intent(FlutterFirebaseMessagingUtils.ACTION_REMOTE_MESSAGE);
+        onMessageIntent.putExtra(FlutterFirebaseMessagingUtils.EXTRA_REMOTE_MESSAGE, remoteMessage);
+        LocalBroadcastManager.getInstance(context).sendBroadcast(onMessageIntent);
+        return;
+      }
+
+      //  |-> ---------------------
+      //    App in Background/Quit
+      //   ------------------------
+      Intent onBackgroundMessageIntent =
+        new Intent(context, FlutterFirebaseMessagingBackgroundService.class);
+      onBackgroundMessageIntent.putExtra(
+        FlutterFirebaseMessagingUtils.EXTRA_REMOTE_MESSAGE, remoteMessage);
+      FlutterFirebaseMessagingBackgroundService.enqueueMessageProcessing(
+        context, onBackgroundMessageIntent);
     }
-
-    SharedPreferences prefs = context.getSharedPreferences("FlutterSharedPreferences", Context.MODE_PRIVATE);
-    String username = prefs.getString("flutter." + "PREFS_USER_DEFAULT", "");
-    prefs.edit().putBoolean("flutter.PREFS_USER_READ_STATUS_NOTIFICATION", true).apply();
-    InsertNotificationDBHelper dbHelper = new InsertNotificationDBHelper(context);
-    dbHelper.addNotification(remoteMessage, username);
-
-    //  |-> ---------------------
-    //      App in Foreground
-    //   ------------------------
-    if (FlutterFirebaseMessagingUtils.isApplicationForeground(context)) {
-      Intent onMessageIntent = new Intent(FlutterFirebaseMessagingUtils.ACTION_REMOTE_MESSAGE);
-      onMessageIntent.putExtra(FlutterFirebaseMessagingUtils.EXTRA_REMOTE_MESSAGE, remoteMessage);
-      LocalBroadcastManager.getInstance(context).sendBroadcast(onMessageIntent);
-      return;
-    }
-
-    //  |-> ---------------------
-    //    App in Background/Quit
-    //   ------------------------
-    Intent onBackgroundMessageIntent =
-      new Intent(context, FlutterFirebaseMessagingBackgroundService.class);
-    onBackgroundMessageIntent.putExtra(
-      FlutterFirebaseMessagingUtils.EXTRA_REMOTE_MESSAGE, remoteMessage);
-    FlutterFirebaseMessagingBackgroundService.enqueueMessageProcessing(
-      context, onBackgroundMessageIntent);
   }
 }
