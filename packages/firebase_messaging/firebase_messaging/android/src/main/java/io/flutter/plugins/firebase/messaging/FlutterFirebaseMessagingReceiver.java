@@ -32,7 +32,7 @@ public class FlutterFirebaseMessagingReceiver extends BroadcastReceiver {
     }
 
     RemoteMessage remoteMessage = new RemoteMessage(intent.getExtras());
-    if (Freshchat.isFreshchatNotification(message)) {
+    if (Freshchat.isFreshchatNotification(remoteMessage)) {
       Log.d(TAG, "broadcast received for message is freshchat notif");
 
     }else {
