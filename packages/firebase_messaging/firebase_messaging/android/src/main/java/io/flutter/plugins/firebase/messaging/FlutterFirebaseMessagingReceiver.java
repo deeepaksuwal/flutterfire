@@ -34,6 +34,7 @@ public class FlutterFirebaseMessagingReceiver extends BroadcastReceiver {
     RemoteMessage remoteMessage = new RemoteMessage(intent.getExtras());
     if (Freshchat.isFreshchatNotification(remoteMessage)) {
       Log.d(TAG, "broadcast received for message is freshchat notif background");
+      Freshchat.handleFcmMessage(context, remoteMessage);
 
     }else {
       // Store the RemoteMessage if the message contains a notification payload.
